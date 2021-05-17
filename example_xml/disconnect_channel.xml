@@ -1,0 +1,34 @@
+<!--
+disconnect_channel
+This method was last updated in API version 2, and is compatible with API requests from version 2 onwards
+This method disconnects a receiver, a number of receivers, or all connected receivers.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- rx_id (ID(s) of the receiver, as an integer, or comma-separated set of integers. Optional. If not supplied, all connections will be ended)
+- force - whether to disconnect existing connections by other users, or for offline receivers
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+
+/api/?v=2&method=disconnect_channel&token=xxxxx (disconnect all your online, connected channels)
+/api/?v=2&method=disconnect_channel&token=xxxxx&rx_id=1 (disconnect channel 1, if you connected it and it's online)
+/api/?v=2&method=disconnect_channel&token=xxxxx&rx_id=1,2,3 (disconnect channels 1, 2, and 3, if you connected them and they're online)
+/api/?v=2&method=disconnect_channel&token=xxxxx&force=1 (force disconnect all connected channels)
+/api/?v=2&method=disconnect_channel&token=xxxxx&rx_id=1,3&force=1 (force disconnect channels 1 and 3)
+
+-->
+
+<api_response>
+<version>2</version>
+<timestamp>2012-12-12 12:12:12</timestamp>
+<success>1</success>
+</api_response>

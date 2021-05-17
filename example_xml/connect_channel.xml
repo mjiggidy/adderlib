@@ -1,0 +1,43 @@
+<!--
+connect_channel
+This method was last updated in API version 5, and is compatible with API requests from version 2 onwards
+This simple method connects a receiver to a channel.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- c_id - the ID of the channel (acquired from get_channels)
+- rx_id - the ID of the receiver (acquired from get_devices)
+- mode (optional, 'v', 's', 'e', 'p' - defaults to 's') - the mode in which to connect the channel
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (optional, if anything went wrong with connecting the channel) Examples Input: /api/?v=5&method=connect_channel&token=xxxxx&c_id=1&rx_id=2&mode=e
+
+-->
+
+<api_response>
+	<version>2</version>
+	<timestamp>2012-12-12 12:12:12</timestamp>
+	<success>1</success>
+</api_response>
+
+
+<!--
+or
+
+<api_response>
+	<version>2</version>
+	<timestamp>2012-12-12 12:12:12</timestamp>
+	<success>0</success>
+	<errors>
+		<error>
+			<code>231</code>
+			<msg>ERROR - private connection not available</msg>
+		</error>
+	</errors>
+</api_response>
+
+-->

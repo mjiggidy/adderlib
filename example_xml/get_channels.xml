@@ -1,0 +1,92 @@
+<!--
+get_channels
+This method was last updated in API version 8, and is compatible with API requests from version 2 onwards
+This method returns a list of channels available to the authenticated user, for a specific receiver.
+It was updated in version 8 to include additional information.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- page (page number to start showing results for, default = 1)
+- results_per_page (number of results per page, default = 1000)
+- device_id (ID of the receiver that this channel will be connected to. Recommended to ensure full checks for connection mode availability.
+- filter_c_name (channel name search string)
+- filter_c_description (channel description search string)
+- filter_c_location (channel location search string)
+- filter_favourites (set this non-empty to only show a user's favourites)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success
+- page (page number)
+- results_per_page (number of results per page, default = unlimited)
+- count_channels - the number of channels on this page, available to the authenticated user
+- for each channel:
+- attribute: item (e.g. 17th channel)
+- c_id (channel id)
+- c_name (channel name)
+- c_description (channel description)
+- c_location (channel location)
+- c_channel_type (channel type)
+- c_tx_id (device ID)
+- channel_online (device status)
+- c_favourite (true if this channel is in the user's favourites, 0-9 if it's a numbered shortcut)
+- view_button (disabled/enabled/hidden - whether the user can connect to the preset in video-only mode.
+disabled = no, because something is in use by someone else. hidden = never. enabled = yes
+If the device_id of the proposed receiver to be used in the connection is not provided,
+this will not necessarily be an accurate indication of whether other connections may actually interfere)
+- shared_button (disabled/enabled/hidden - as above, but in shared mode)
+- control_button (disabled/enabled/hidden - as above, but in exclusive mode)
+- exclusive_button (disabled/enabled/hidden - as above, but in private mode)
+
+Additional channel output values in version 4:
+- c_video1 (device ID)
+- c_video1_head (1|2)
+- c_video2 (device ID)
+- c_video2_head (1|2)
+- c_audio (device ID)
+- c_usb (device ID)
+- c_serial (device ID)
+
+Additional channel output values in version 8:
+- c_usb1 (device ID)
+- c_audio1 (device ID)
+- c_audio2 (device ID)
+- c_sensitive
+- c_rdp_id (RDP ID) only for RDP devices. Examples Input: /api/?v=2&method=get_channels&token=xxxxx
+
+-->
+
+<api_response>
+	<version>2</version>
+	<timestamp>2012-12-14 12:12:12</timestamp>
+	<success>1</success>
+	<page>1</page>
+	<results_per_page>10</results_per_page>
+	<count_channels>2</count_channels>
+	<channels>
+		<channel item="1">
+			<c_id>3</c_id>
+			<c_name>Channel 1</c_name>
+			<c_description>Description for Channel 1</c_description>
+			<c_location>Location of Channel 1</c_location>
+			<c_favourite>false</c_favourite>
+			<view_button>disabled</view_button>
+			<shared_button>disabled</shared_button>
+			<control_button>disabled</control_button>
+			<exclusive_button>disabled</exclusive_button>
+		</channel>
+		<channel item="2">
+			<c_id>5</c_id>
+			<c_name>Channel 2</c_name>
+			<c_description>Description for Channel 2</c_description>
+			<c_location>Location of Channel 2</c_location>
+			<c_favourite>2</c_favourite>
+			<view_button>enabled</view_button>
+			<shared_button>enabled</shared_button>
+			<control_button>enabled</control_button>
+			<exclusive_button>hidden</exclusive_button>
+		</channel>
+	</channels>
+</api_response>

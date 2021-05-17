@@ -1,0 +1,143 @@
+<!--
+get_devices
+This method was last updated in API version 5, and is compatible with API requests from version 2 onwards
+This method returns a list of devices.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- device_type ('rx' = receivers, 'tx' = transmitters. Default = 'rx')
+- filter_d_name (Optional. Device name search string)
+- filter_d_description (Optional. Device description search string)
+- filter_d_location (Optional. Device location search string)
+- sort (Optional. Sort results by 'name'/'description'/'location'. Default = 'name')
+- sort_dir (Optional. Sort direction for results 'asc'/'desc'. Default = 'asc')
+- status (Optional. '','outdated_aim_ip','rebooting','offline','outdated_firmware','invalid_backup_firmware','rebooting','upgrading_firmware','backup_mode')
+- show_all (Optional. If set and not blank, shows all receivers, not just those the logged-in user is permitted to use)
+- page (page number to start showing results for, default = 1)
+- results_per_page (number of results per page, default = 1000)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success
+- page (page number)
+- results_per_page (number of results per page, default = unlimited)
+- total_devices - the total number of devices
+- count_devices - the number of devices on this page
+- for each device:
+- attribute: item (e.g. 17th device)
+- d_id (device ID)
+- d_serial_number (the device's serial number, if it is reported)
+- d_mac_address (MAC address for interface 1)
+- d_mac_address2 (MAC address for interface 2)
+- d_name (device name)
+- d_online (0 = interface 1 offline, 1 = interface 1 online)
+- d_online2 (0 = interface 2 offline, 1 = interface 2 online)
+- d_type (rx, tx)
+- d_version (1 = ALIF1000R/ALIF1000T, 2 = all other devices)
+- d_variant ('b' = ALIF2002T, 'v' = ALIF2112T, 's' = ALIF1002R/ALIF1002T, 't' = ALIF2020R/ALIF2020T)
+- d_ip_address (IP address for interface 1)
+- d_ip_address2 (IP address for interface 2)
+- d_description (device description)
+- d_location (device location)
+- d_configured (0 = no, 1 = yes)
+- d_valid_firmware (0 = no, 1 = yes)
+- d_valid_backup_firmware (0 = no, 1 = yes)
+- d_firmware (firmware version, e.g. 2.5.17879)
+- d_backup_firmware (backup firmware version)
+- d_date_added (Date device added to AIM network e.g. 2012-07-13 22:17:22)
+- d_status (0 = device offline, 1 = device online, 2 = rebooting, 4 = firmware_upgrading, 6 = running backup firmware)
+The following property is only returned for transmitters:
+- count_transmitter_channels (the number of channels containing this transmitter)
+- count_transmitter_presets (the number of presets containing this transmitter)
+The following properties are only returned for receivers:
+- con_exclusive (0/1 - if the last connection is/was in private mode)
+- con_control (1/2/3 - 1 if the last connection is/was video-only, 2 if in exclusive mode, 3 if in shared mode)
+- con_start_time (start time of last connection e.g. 2012-09-07 13:33:17)
+- con_end_time (empty if connection still active, else date/time the connection was ended e.g. 2012-09-07 13:33:17)
+- u_username (username of the user who initiated the last connection)
+- u_id (user ID of the user who initiated the last connection)
+- c_name (name of the channel last connected)
+- count_receiver_groups (the number of receiver groups this receiver is a part of)
+- count_receiver_presets (the number of presets this receiver is a part of)
+- count_users (the number of users who have access to this receiver) Examples Input: /api/?v=2&method=get_devices&token=xxxxx
+
+-->
+
+<api_response>
+	<version>2</version>
+	<timestamp>2012-09-12 14:56:11</timestamp>
+	<success>1</success>
+	<page>2</page>
+	<results_per_page>3</results_per_page>
+	<total_devices>12</total_devices>
+	<count_devices>3</count_devices>
+	<devices>
+	
+		<!-- Receiver -->
+		<device item="1">
+			<d_id>170</d_id>
+			<d_serial_number>1409A0000159</d_serial_number>
+			<d_mac_address>00:0F:58:01:6E:3D</d_mac_address>
+			<d_mac_address2>00:0F:58:5B:6E:3D</d_mac_address2>
+			<d_name>RX 123</d_name>
+			<d_online>1</d_online>
+			<d_online2>0</d_online2>
+			<d_type>rx</d_type>
+			<d_version>2</d_version>
+			<d_variant></d_variant>
+			<d_ip_address>10.10.10.66</d_ip_address>
+			<d_ip_address2>10.10.10.67</d_ip_address2>
+			<d_description></d_description>
+			<d_location>Server Rack 3</d_location>
+			<d_configured>1</d_configured>
+			<d_valid_firmware>1</d_valid_firmware>
+			<d_valid_backup_firmware>1</d_valid_backup_firmware>
+			<d_firmware>2.3.16682</d_firmware>
+			<d_backup_firmware>2.3.16682</d_backup_firmware>
+			<d_date_added>2012-07-14 01:37:07</d_date_added>
+			<d_status>1</d_status>
+			<con_exclusive>0</con_exclusive>
+			<con_control>1</con_control>
+			<con_start_time>2012-09-07 13:33:19</con_start_time>
+			<con_end_time/>
+			<u_username>admin</u_username>
+			<u_id>1</u_id>
+			<c_name>Channel 1</c_name>
+			<count_receiver_groups>1</count_receiver_groups>
+			<count_receiver_presets>2</count_receiver_presets>
+			<count_users>1</count_users>
+		</device>
+
+		<!-- Transmitter -->
+		<device item="2">
+			<d_id>64</d_id>
+			<d_serial_number/>
+			<d_mac_address>00:0F:58:01:56:85</d_mac_address>
+			<d_mac_address2>00:0F:58:5B:56:85</d_mac_address2>
+			<d_name>TX 456</d_name>
+			<d_online>0</d_online>
+			<d_online2>0</d_online2>
+			<d_type>tx</d_type>
+			<d_version>1</d_version>
+			<d_variant></d_variant>
+			<d_ip_address>1.1.201.31</d_ip_address>
+			<d_ip_address2>1.1.201.32</d_ip_address2>
+			<d_description></d_description>
+			<d_location></d_location>
+			<d_configured>1</d_configured>
+			<d_valid_firmware>1</d_valid_firmware>
+			<d_valid_backup_firmware>1</d_valid_backup_firmware>
+			<d_firmware>2.1.15747</d_firmware>
+			<d_backup_firmware>2.1.15747</d_backup_firmware>
+			<d_date_added>2012-07-13 17:50:04</d_date_added>
+			<d_status>0</d_status>
+			<count_transmitter_channels>3</count_transmitter_channels>
+			<count_transmitter_presets>1</count_transmitter_presets>
+		</device>
+
+	</devices>
+</api_response>
+
+

@@ -1,0 +1,27 @@
+<!--
+reboot_devices
+This method was last updated in API version 7, and is compatible with API requests from version 7 onwards
+This method sends a reboot command to the specified devices.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- ids (a comma-separated list of IDs of the devices to be rebooted)
+
+Output values:
+- version
+- the current API version number
+- timestamp
+- the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here) Examples
+
+Input: /api/?v=7&method=reboot_devices&token=xxxxx&ids=101,1701,501 
+
+-->
+
+<api_response>
+	<version>7</version>
+	<timestamp>2012-12-12 12:12:12</timestamp>
+	<success>1</success>
+</api_response> 
