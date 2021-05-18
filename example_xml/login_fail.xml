@@ -1,0 +1,39 @@
+<!--
+login
+This method was last updated in API version 1, and is compatible with API requests from version 1 onwards. The API will require a valid AIM user's login credentials to be presented in the first request. The API will return an authentication code, which must be passed in all future requests. This authentication code can be re-used until a logout request is made, at which point the authentication code will no longer be valid. The concept of an 'anonymous user' can apply to the API. If no login username and password are provided, the API will return an authentication token for the anonymous user (either the same one as for the OSD, or else an 'anonymous API user' account can be created).
+
+Input parameters:
+- username
+- password
+- v (the AIM API version this request is designed for)
+
+Output values:
+- timestamp - the current server time
+- version - the current API version number
+- token - an authentication code for future API requests
+- success Examples Input: /api/?v=1&method=login&username=xxxxx&password=xxxxx
+-->
+
+<!--
+<api_response>
+	<version>1</version>
+	<timestamp>2012-12-14 12:12:12</timestamp>
+	<success>1</success>
+	<token>5cf494a71c29e9465a57a81e0a2d602c</token>
+</api_response>
+
+
+or
+-->
+
+<api_response>
+	<version>1</version>
+	<timestamp>2012-12-14 12:12:12</timestamp>
+	<success>0</success>
+	<errors>
+		<error>
+			<code>2</code>
+			<msg>Invalid username or password</msg>
+		</error>
+	</errors>
+</api_response>

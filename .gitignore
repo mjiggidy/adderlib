@@ -136,3 +136,4 @@ bin/
 include/
 lib/
 pyvenv.cfg
+.vscode/settings.json
