@@ -202,13 +202,13 @@ class AdderDevice(abc.ABC):
 
 		elif self._extended.get("d_variant") == 't':
 			return self.DeviceModel.ALIF2020
-		
+
 		else:
 			return self.DeviceModel.UNKNOWN
 
 	@property
 	@abc.abstractmethod
-	def type(self) -> DeviceType:
+	def device_type(self) -> DeviceType:
 		"""Type of Adder device"""
 		pass
 
@@ -226,17 +226,92 @@ class AdderTransmitter(AdderDevice):
 		return int(self._extended.get("count_transmitter_presets"))
 
 	@property
-	def type(self) -> AdderDevice.DeviceType:
+	def device_type(self) -> AdderDevice.DeviceType:
 		return AdderDevice.DeviceType.TX
 
 
 class AdderReceiver(AdderDevice):
 	"""Adderlink Receiver (RX) Device"""
 
+	# TODO: con_exclusive(bool) vs count_control(enum) for determining exclusive mode?
+
+	class ConnectionControlType(enum.Enum):
+		"""Control modes"""
+		UNKNOWN    = -1
+		VIDEO_ONLY =  1
+		EXCLUSIVE  =  2
+		SHARED     =  3
 
 	@property
-	def type(self) -> AdderDevice.DeviceType:
+	def device_type(self) -> AdderDevice.DeviceType:
 		return AdderDevice.DeviceType.RX
+	
+	# Connection info
+
+	@property
+	def connection_start(self) -> datetime:
+		"""Time the last known connection started"""
+		return datetime.fromisoformat(self._extended.get("con_start_time"))
+		
+	@property
+	def connection_end(self) -> datetime:
+		"""Time the last known connection was ended.  Returns None if connection is current."""
+		if self._extended.get("con_end_time") is not None:
+			return datetime.fromisoformat(self._extended.get("con_end_time"))
+		else:
+			return None
+
+	@property
+	def connection_control(self) -> ConnectionControlType:
+		"""Control mode of the last known connection"""
+		con_type = int(self._extended.get("con_control", -1))
+		if con_type in range(1,4):
+			return self.ConnectionControlType(con_type)
+		else:
+			return self.ConnectionControlType(-1)
+	
+	@property
+	def channel_name(self) -> str:
+		"""The name of the last known channel this receiver was connected"""
+		return self._extended.get("c_name")
+
+	@property
+	def is_connected(self) -> bool:
+		"""Is the receiver currently connected to a channel"""
+		return self.connection_start and self.connection_end
+	
+	# Connected user info
+
+	@property
+	def last_username(self) -> str:
+		"""Last known username"""
+		return self._extended.get("u_username","")
+	
+	@property
+	def last_userid(self) -> int:
+		"""Last known user ID"""
+		return int(self._extended.get("u_userid",""))
+	
+	# Stats
+
+	@property
+	def group_count(self) -> int:
+		"""Number of receiver groups this belongs to"""
+		return int(self._extended.get("count_receiver_groups"))
+
+	@property
+	def preset_count(self) -> int:
+		"""Number of receiver presets this belongs to"""
+		return int(self._extended.get("count_receiver_presets"))
+	
+	@property
+	def user_count(self) -> int:
+		"""Number of users with access to this receiver"""
+		return inti(self._extended.get("count_users")) 
+
+	
+	
+	
 
 
 class AdderUser:
@@ -301,8 +376,20 @@ class AdderAPI:
 			
 			
 			for device in response.get("devices").get("device"):
-				#print("Device:",device)
-				yield AdderTransmitter(device)
+				if device.get("d_type") == "tx":
+					yield AdderTransmitter(device)
 			
-	
+	def getReceivers(self):
+
+		url = f"/api/?v={self._api_version}&token={self.user.token}&method=get_devices&device_type=rx"
+		response = self._url_handler.api_call(url)
+
+		if response.get("success") == "1" and "devices" in response:
+			devices = response.get("devices")
+			#print(devices.get("device"))
+			
+			
+			for device in response.get("devices").get("device"):
+				if device.get("d_type") == "rx":
+					yield AdderReceiver(device)
 	

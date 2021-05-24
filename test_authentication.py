@@ -25,6 +25,15 @@ class TestAuthentication(unittest.TestCase):
 		tx = next(ad.getTransmitters())
 		self.assertIsInstance(tx, adder.AdderTransmitter)
 		self.assertTrue(tx, tx.interfaces[0].is_online)
+	
+	def test_valid_receiver(self):
+		user = adder.AdderUser()
+		ad = adder.AdderAPI(user=user, url_handler=adder.DebugHandler(), api_version=8)
+		ad.login("test","goodpwd")
+
+		rx = next(ad.getReceivers())
+		self.assertIsInstance(rx, adder.AdderReceiver)
+		self.assertTrue(rx, rx.is_connected)
 
 if __name__ == "__main__":
 	unittest.main()
