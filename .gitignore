@@ -135,5 +135,6 @@ dmypy.json
 bin/
 include/
 lib/
+Scripts/*
 pyvenv.cfg
 .vscode/settings.json
