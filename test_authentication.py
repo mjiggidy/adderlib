@@ -34,6 +34,14 @@ class TestAuthentication(unittest.TestCase):
 		rx = next(ad.getReceivers())
 		self.assertIsInstance(rx, adder.AdderReceiver)
 		self.assertTrue(rx, rx.is_connected)
+	
+	def test_valid_channel(self):
+		user = adder.AdderUser()
+		ad = adder.AdderAPI(user=user, url_handler=adder.DebugHandler(), api_version=8)
+		ad.login("test","goodpwd")
+
+		chan = next(ad.getChannels())
+		self.assertIsInstance(chan, adder.AdderChannel)
 
 if __name__ == "__main__":
 	unittest.main()
