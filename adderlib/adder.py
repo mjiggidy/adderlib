@@ -1,4 +1,5 @@
 import abc, urllib.parse, enum
+from typing import ValuesView
 import xmltodict
 from datetime import datetime
 from dataclasses import dataclass
@@ -44,6 +45,12 @@ class DebugHandler(UrlHandler):
 		
 		elif method == "get_devices":
 			with open("example_xml/get_devices.xml") as api_response:
+				response = xmltodict.parse(api_response.read()).get("api_response")
+			#	print("Responding with",response)
+			return response
+		
+		elif method == "get_channels":
+			with open("example_xml/get_channels.xml") as api_response:
 				response = xmltodict.parse(api_response.read()).get("api_response")
 			#	print("Responding with",response)
 			return response
@@ -115,7 +122,7 @@ class AdderDevice(abc.ABC):
 	@property
 	def id(self) -> str:
 		"""Device ID"""
-		return self._extended.get("d_id") or None	
+		return self._extended.get("d_id") or None
 	
 	@property
 	def serial_number(self) -> str:
@@ -140,7 +147,7 @@ class AdderDevice(abc.ABC):
 	@property
 	def mac_address(self) -> str:
 		"""Primary MAC address"""
-		return self.mac_addresses[0]
+		return self.mac_addresses[0] or None
 
 	@property
 	def interfaces(self) -> tuple():
@@ -235,6 +242,7 @@ class AdderReceiver(AdderDevice):
 
 	# TODO: con_exclusive(bool) vs count_control(enum) for determining exclusive mode?
 
+	@enum.unique
 	class ConnectionControlType(enum.Enum):
 		"""Control modes"""
 		UNKNOWN    = -1
@@ -285,12 +293,12 @@ class AdderReceiver(AdderDevice):
 	@property
 	def last_username(self) -> str:
 		"""Last known username"""
-		return self._extended.get("u_username","")
+		return self._extended.get("u_username") or None
 	
 	@property
 	def last_userid(self) -> int:
 		"""Last known user ID"""
-		return int(self._extended.get("u_userid",""))
+		return int(self._extended.get("u_userid"))
 	
 	# Stats
 
@@ -311,7 +319,159 @@ class AdderReceiver(AdderDevice):
 
 	
 	
+class AdderChannel:
+
+	@enum.unique
+	class ButtonState(enum.Enum):
+		"""Video-only mode capabilities"""
+		UNKNOWN  = -1
+		DISABLED =  0	# No, because something is in use by someone else
+		ENABLED  =  1	# Yes
+		HIDDEN   =  2	# Never
+
+	def __init__(self, properties:dict):
+		self._extended = {key: val for key,val in properties.items()}
 	
+	@property
+	def id(self) -> str:
+		"""Channel ID"""
+		return self._extended.get("c_id") or None
+	
+	@property
+	def name(self) -> str:
+		"""Channel name"""
+		return self._extended.get("c_name")
+	
+	@property
+	def description(self) -> str:
+		"""Channel description"""
+		return self._extended.get("c_description")
+	
+	@property
+	def location(self) -> str:
+		"""Channel location"""
+		return self._extended.get("c_location")
+	
+	@property
+	def type(self) -> str:
+		"""Channel type"""
+		# TODO: Investigate.  Not in the documentation
+		return self._extended.get("c_channel_type")
+
+	@property
+	def tx_id(self) -> str:
+		"""Device ID"""
+		# TODO: Investigate.  Not in the documentation
+		return self._extended.get("c_tx_id") or None
+	
+	@property
+	def is_online(self) -> bool:
+		"""Device status"""
+		# TODO: Investigate.  Not in the documentation
+		return self._extended.get("channel_online") == "true"
+	
+	@property
+	def is_favorite(self) -> bool:
+		"""Whether the channel has been favorited"""
+		return self._extended.get("c_favourite") != "false"
+	
+	@property
+	def shortcut(self) -> int:
+		"""Returns the shortcut index if set, otherwise returns None"""
+		pre = self._extended.get("c_favorite","")
+		return int(pre) if pre.isnumeric() else None
+	
+	@property
+	def view_button(self) -> ButtonState:
+		"""Indicates the state of the video-only view button"""
+		state = self._extended.get("view_button")
+		if state == "disabled":
+			return self.ButtonState.DISABLED
+		elif state == "enabled":
+			return self.ButtonState.ENABLED
+		elif state == "hidden":
+			return self.ButtonState.HIDDEN
+		else:
+			return self.ButtonState.UNKNOWN
+	
+	@property
+	def shared_button(self) -> ButtonState:
+		"""Indicates the state of the shared view button"""
+		state = self._extended.get("shared_button")
+		if state == "disabled":
+			return self.ButtonState.DISABLED
+		elif state == "enabled":
+			return self.ButtonState.ENABLED
+		elif state == "hidden":
+			return self.ButtonState.HIDDEN
+		else:
+			return self.ButtonState.UNKNOWN
+
+	@property
+	def control_button(self) -> ButtonState:
+		"""Indicates the state of the full-control button"""
+		state = self._extended.get("control_button")
+		if state == "disabled":
+			return self.ButtonState.DISABLED
+		elif state == "enabled":
+			return self.ButtonState.ENABLED
+		elif state == "hidden":
+			return self.ButtonState.HIDDEN
+		else:
+			return self.ButtonState.UNKNOWN
+
+	@property
+	def exclusive_button(self) -> ButtonState:
+		"""Indicates the state of the video-only view button"""
+		state = self._extended.get("exclusive_button")
+		if state == "disabled":
+			return self.ButtonState.DISABLED
+		elif state == "enabled":
+			return self.ButtonState.ENABLED
+		elif state == "hidden":
+			return self.ButtonState.HIDDEN
+		else:
+			return self.ButtonState.UNKNOWN
+	
+	@property
+	def view_available(self) -> bool:
+		"""Whether the user may view in video-only mode"""
+		return self.view_button == self.ButtonState.ENABLED
+
+	@property
+	def shared_available(self) -> bool:
+		"""Whether the user may view in shared mode"""
+		return self.shared_button == self.ButtonState.ENABLED
+	
+	@property
+	def control_available(self) -> bool:
+		"""Whether the user may view in video-only mode"""
+		return self.control_button == self.ButtonState.ENABLED
+	
+	@property
+	def exclusive_available(self) -> bool:
+		"""Whether the user may view in video-only mode"""
+		return self.exclusive_button == self.ButtonState.ENABLED
+
+	"""
+	TODO: Additional values not documented
+
+	Additional channel output values in version 4:
+	- c_video1 (device ID)
+	- c_video1_head (1|2)
+	- c_video2 (device ID)
+	- c_video2_head (1|2)
+	- c_audio (device ID)
+	- c_usb (device ID)
+	- c_serial (device ID)
+
+	Additional channel output values in version 8:
+	- c_usb1 (device ID)
+	- c_audio1 (device ID)
+	- c_audio2 (device ID)
+	- c_sensitive
+	- c_rdp_id (RDP ID) only for RDP devices.
+	"""
 
 
 class AdderUser:
@@ -392,4 +552,15 @@ class AdderAPI:
 			for device in response.get("devices").get("device"):
 				if device.get("d_type") == "rx":
 					yield AdderReceiver(device)
+	
+	def getChannels(self):
+
+		url = f"/api/?v={self._api_version}&token={self.user.token}&method=get_channels"
+		response = self._url_handler.api_call(url)
+		
+		if response.get("success") == "1" and "channels" in response:
+			channels = response.get("channels")
+
+			for channel in channels.get("channel"):
+				yield AdderChannel(channel)
 	
