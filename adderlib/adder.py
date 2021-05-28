@@ -307,7 +307,7 @@ class AdderReceiver(AdderDevice):
 	@property
 	def user_count(self) -> int:
 		"""Number of users with access to this receiver"""
-		return inti(self._extended.get("count_users")) 
+		return int(self._extended.get("count_users")) 
 
 	
 	
