@@ -34,6 +34,11 @@ class DebugHandler(UrlHandler):
 					response = xmltodict.parse(api_response.read()).get("api_response")
 				return response
 		
+		if method == "logout":
+			with open("example_xml/logout.xml") as api_response:
+				response = xmltodict.parse(api_response.read()).get("api_response")
+			return response
+		
 		elif method == "get_devices":
 			with open("example_xml/get_devices.xml") as api_response:
 				response = xmltodict.parse(api_response.read()).get("api_response")

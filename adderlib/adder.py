@@ -4,6 +4,9 @@ from .users import AdderUser
 from .devices import AdderReceiver, AdderTransmitter
 from .channels import AdderChannel
 
+class AdderRequestError(Exception):
+	"""Adder API request has not returned success"""
+	pass
 
 class AdderAPI:
 	"""Adderlink API for interacting with devices, channels, and users"""
@@ -21,6 +24,18 @@ class AdderAPI:
 		
 		if response.get("success") == "1" and response.get("token") is not None:
 			self.user.set_logged_in(username, response.get("token"))
+	
+	def logout(self) -> bool:
+		"""Log the uer out"""
+		url = f"/api/?v={self._api_version}&token={self.user.token}&method=logout"
+		response = self._url_handler.api_call(url)
+
+		# TODO: More detailed error handling?
+		# TODO: Maybe have the URL handler throw an exception?
+		if response.get("success") == "1":
+			self.user.set_logged_out()
+		else:
+			raise AdderRequestError()
 	
 	def getTransmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Request a list of available Adderlink transmitters"""
