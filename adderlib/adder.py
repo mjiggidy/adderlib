@@ -16,6 +16,7 @@ class AdderAPI:
 		self._url_handler = url_handler or DebugHandler()
 		self._api_version = api_version
 
+	# User authentication
 	def login(self, username:str, password:str):
 		"""Log the user in to the KVM system and retrieve an API token"""
 		
@@ -26,7 +27,7 @@ class AdderAPI:
 			self.user.set_logged_in(username, response.get("token"))
 	
 	def logout(self) -> bool:
-		"""Log the uer out"""
+		"""Log the user out"""
 		url = f"/api/?v={self._api_version}&token={self.user.token}&method=logout"
 		response = self._url_handler.api_call(url)
 
@@ -37,6 +38,7 @@ class AdderAPI:
 		else:
 			raise AdderRequestError()
 	
+	# Device management
 	def getTransmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Request a list of available Adderlink transmitters"""
 
@@ -59,6 +61,7 @@ class AdderAPI:
 				if device.get("d_type") == "rx":
 					yield AdderReceiver(device)
 	
+	# Channel management
 	def getChannels(self) -> typing.Generator[AdderChannel, None, None]:
 		"""Request a list of available Adderlink channels"""
 
