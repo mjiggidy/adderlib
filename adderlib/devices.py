@@ -1,4 +1,5 @@
-import enum, abc, datetime
+import enum, abc
+from datetime import datetime
 from dataclasses import dataclass
 
 
@@ -13,7 +14,7 @@ class AdderDevice(abc.ABC):
 	@enum.unique
 	class DeviceStatus(enum.Enum):
 		"""Operational status of Adder device"""
-		UNKNOWN			= -1
+		UNKNOWN         = -1
 		OFFLINE         =  0
 		ONLINE          =  1
 		REBOOTING       =  2

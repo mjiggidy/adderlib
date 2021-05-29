@@ -1,8 +1,8 @@
-import urllib.parse
-from .urlhandlers import *
-from .user import *
-from .devices import *
-from .channel import *
+import urllib.parse, typing
+from .urlhandlers import UrlHandler, DebugHandler
+from .users import AdderUser
+from .devices import AdderReceiver, AdderTransmitter
+from .channels import AdderChannel
 
 
 class AdderAPI:
@@ -22,41 +22,34 @@ class AdderAPI:
 		if response.get("success") == "1" and response.get("token") is not None:
 			self.user.set_logged_in(username, response.get("token"))
 	
-	def getTransmitters(self):
+	def getTransmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
+		"""Request a list of available Adderlink transmitters"""
 
 		url = f"/api/?v={self._api_version}&token={self.user.token}&method=get_devices&device_type=tx"
 		response = self._url_handler.api_call(url)
 
 		if response.get("success") == "1" and "devices" in response:
-			devices = response.get("devices")
-			#print(devices.get("device"))
-			
-			
 			for device in response.get("devices").get("device"):
 				if device.get("d_type") == "tx":
 					yield AdderTransmitter(device)
 			
-	def getReceivers(self):
+	def getReceivers(self) -> typing.Generator[AdderReceiver, None, None]:
+		"""Request a list of available Adderlink receivers"""
 
 		url = f"/api/?v={self._api_version}&token={self.user.token}&method=get_devices&device_type=rx"
 		response = self._url_handler.api_call(url)
 
-		if response.get("success") == "1" and "devices" in response:
-			devices = response.get("devices")
-			#print(devices.get("device"))
-			
-			
+		if response.get("success") == "1" and "devices" in response:			
 			for device in response.get("devices").get("device"):
 				if device.get("d_type") == "rx":
 					yield AdderReceiver(device)
 	
-	def getChannels(self):
+	def getChannels(self) -> typing.Generator[AdderChannel, None, None]:
+		"""Request a list of available Adderlink channels"""
 
 		url = f"/api/?v={self._api_version}&token={self.user.token}&method=get_channels"
 		response = self._url_handler.api_call(url)
 		
 		if response.get("success") == "1" and "channels" in response:
-			channels = response.get("channels")
-
-			for channel in channels.get("channel"):
+			for channel in response.get("channels").get("channel"):
 				yield AdderChannel(channel)
