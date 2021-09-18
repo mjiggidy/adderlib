@@ -1,0 +1,857 @@
+
+<!-- saved from url=(0040)http://192.168.50.2/api/#connect_channel -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><h1>API Documentation</h1>API version: 7<br><h2>Changelog</h2><ul><li>v7 (AIM v4.8) - added <em>reboot_devices</em>.</li><li>v6 (AIM v4.5) - added <em>get_all_c_usb</em>, <em>delete_c_usb</em>, <em>update_c_usb</em>, <em>connect_c_usb</em>, <em>disconnect_c_usb</em>.</li><li>v5 (AIM v4.3) - added <em>update_device</em>; updated <em>get_devices</em>, <em>connect_channel</em>, <em>connect_preset</em>, <em>create_channel</em>, <em>create_preset</em>.</li><li>v4 (AIM v4.1) - added <em>create_channel</em>, <em>delete_channel</em>; updated <em>get_channels</em>.</li><li>v3 (AIM v3.2) - added <em>create_preset</em>, <em>delete_preset</em>.</li><li>v2 (AIM v2.3) - added <em>get_devices</em>, <em>get_channels</em>, <em>connect_channel</em>, <em>disconnect_channel</em>. Updated version compatibility information.</li><li>v1 (AIM v1.3) - added <em>login</em>, <em>logout</em>, <em>get_presets</em>, <em>connect_preset</em>, <em>disconnect_preset</em></li></ul><h2>Methods</h2><a href="http://192.168.50.2/api/#login">login</a><br><a href="http://192.168.50.2/api/#logout">logout</a><br><a href="http://192.168.50.2/api/#get_devices">get_devices</a><br><a href="http://192.168.50.2/api/#get_channels">get_channels</a><br><a href="http://192.168.50.2/api/#get_presets">get_presets</a><br><a href="http://192.168.50.2/api/#connect_channel">connect_channel</a><br><a href="http://192.168.50.2/api/#connect_preset">connect_preset</a><br><a href="http://192.168.50.2/api/#disconnect_channel">disconnect_channel</a><br><a href="http://192.168.50.2/api/#disconnect_preset">disconnect_preset</a><br><a href="http://192.168.50.2/api/#create_preset">create_preset</a><br><a href="http://192.168.50.2/api/#delete_preset">delete_preset</a><br><a href="http://192.168.50.2/api/#create_channel">create_channel</a><br><a href="http://192.168.50.2/api/#delete_channel">delete_channel</a><br><a href="http://192.168.50.2/api/#update_device">update_device</a><br><a href="http://192.168.50.2/api/#get_all_c_usb">get_all_c_usb</a><br><a href="http://192.168.50.2/api/#delete_c_usb">delete_c_usb</a><br><a href="http://192.168.50.2/api/#update_c_usb">update_c_usb</a><br><a href="http://192.168.50.2/api/#connect_c_usb">connect_c_usb</a><br><a href="http://192.168.50.2/api/#disconnect_c_usb">disconnect_c_usb</a><br><a href="http://192.168.50.2/api/#reboot_devices">reboot_devices</a><br><a id="login"></a><h3>login</h3><em>This method was last updated in API version 1, and is compatible with API requests from version 1 onwards</em><br><pre>The API will require a valid AIM user's login credentials to be presented in
+the first request. The API will return an authentication code, which must be
+passed in all future requests. This authentication code can be re-used until
+a logout request is made, at which point the authentication code will no
+longer be valid.
+The concept of an 'anonymous user' can apply to the API. If no login username
+and password are provided, the API will return an authentication token for
+the anonymous user (either the same one as for the OSD, or else an 'anonymous
+API user' account can be created).
+
+Input parameters:
+- username
+- password
+- v (the AIM API version this request is designed for)
+
+Output values:
+- timestamp - the current server time
+- version - the current API version number
+- token - an authentication code for future API requests
+- success
+
+Examples
+
+Input:
+/api/?v=1&amp;method=login&amp;username=xxxxx&amp;password=xxxxx
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-14 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;token&gt;5cf494a71c29e9465a57a81e0a2d602c&lt;/token&gt;
+&lt;/api_response&gt;
+
+or
+
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-14 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;0&lt;/success&gt;
+   &lt;errors&gt;
+      &lt;error&gt;
+         &lt;code&gt;2&lt;/code&gt;
+         &lt;msg&gt;Invalid username or password&lt;/msg&gt;
+      &lt;/error&gt;
+   &lt;/errors&gt;
+&lt;/api_response&gt;</pre><br><a id="logout"></a><h3>logout</h3><em>This method was last updated in API version 1, and is compatible with API requests from version 1 onwards</em><br><pre>The authentication token provided by the 'login' method can be used until the
+'logout' method is called.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+
+Output values:
+- timestamp - the current server time
+- success - 0 = fail, 1 = success
+
+Examples
+
+Input:
+/api/?method=logout&amp;token=xxxxx&amp;v=1
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2011-02-04 15:24:15&lt;/time&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+
+or
+
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;0&lt;/success&gt;
+   &lt;errors&gt;
+      &lt;error&gt;
+         &lt;code&gt;3&lt;/code&gt;
+         &lt;msg&gt;Error logging out (you may already have logged out)&lt;/msg&gt;
+      &lt;/error&gt;
+   &lt;/errors&gt;
+&lt;/api_response&gt;</pre><br><a id="get_devices"></a><h3>get_devices</h3><em>This method was last updated in API version 5, and is compatible with API requests from version 2 onwards</em><br><pre>This method returns a list of devices.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- device_type ('rx' = receivers, 'tx' = transmitters. Default = 'rx')
+- filter_d_name (Optional. Device name search string)
+- filter_d_description (Optional. Device description search string)
+- filter_d_location (Optional. Device location search string)
+- sort (Optional. Sort results by 'name'/'description'/'location'. Default = 'name')
+- sort_dir (Optional. Sort direction for results 'asc'/'desc'. Default = 'asc')
+- status (Optional. '','outdated_aim_ip','rebooting','offline','outdated_firmware','invalid_backup_firmware','rebooting','upgrading_firmware','backup_mode')
+- show_all (Optional. If set and not blank, shows all receivers, not just those the logged-in user is permitted to use)
+- page (page number to start showing results for, default = 1)
+- results_per_page (number of results per page, default = 1000)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success
+- page (page number)
+- results_per_page (number of results per page, default = unlimited)
+- total_devices - the total number of devices
+- count_devices - the number of devices on this page
+- for each device:
+   - attribute: item (e.g. 17th device)
+   - d_id (device ID)
+   - d_serial_number (the device's serial number, if it is reported)
+   - d_mac_address (MAC address for interface 1)
+   - d_mac_address2 (MAC address for interface 2)
+   - d_name (device name)
+   - d_online (0 = interface 1 offline, 1 = interface 1 online)
+   - d_online2 (0 = interface 2 offline, 1 = interface 2 online)
+   - d_type (rx, tx)
+   - d_version (0 = RDP SERVER, 1 = ALIF1000R/ALIF1000T, 2 = ALIF2000R/ALIF2000T/ALIF2002T/ALIF2112T/ALIF1002R/ALIF1002T/ALIF2020R/ALIF2020T/ALIF100T/ALIF100T-VGA/ALIF101T-HDMI, 4 = ALIF4021R/ALIF4021T, 8 = ALIF3000R)
+   - d_variant ('b' = ALIF2002T, 'v' = ALIF2112T, 's' = ALIF1002R/ALIF1002T, 't' = ALIF2020R/ALIF2020T, 'd' = ALIF100T, 'f' = ALIF100T-VGA, 'h' = ALIF101T-HDMI)
+   - d_ip_address (IP address for interface 1)
+   - d_ip_address2 (IP address for interface 2)
+   - d_description (device description)
+   - d_location (device location)
+   - d_configured (0 = no, 1 = yes)
+   - d_valid_firmware (0 = no, 1 = yes)
+   - d_valid_backup_firmware (0 = no, 1 = yes)
+   - d_firmware (firmware version, e.g. 2.5.17879)
+   - d_backup_firmware (backup firmware version)
+   - d_date_added (Date device added to AIM network e.g. 2012-07-13 22:17:22)
+   - d_status (0 = device offline, 1 = device online, 2 = rebooting, 4 = firmware_upgrading, 6 = running backup firmware)
+The following property is only returned for transmitters:
+   - count_transmitter_channels (the number of channels containing this transmitter)
+   - count_transmitter_presets (the number of presets containing this transmitter)
+The following properties are only returned for receivers:
+   - con_exclusive (0/1 - if the last connection is/was in private mode)
+   - con_control (1/2/3 - 1 if the last connection is/was video-only, 2 if in exclusive mode, 3 if in shared mode)
+   - con_start_time (start time of last connection e.g. 2012-09-07 13:33:17)
+   - con_end_time (empty if connection still active, else date/time the connection was ended e.g. 2012-09-07 13:33:17)
+   - u_username (username of the user who initiated the last connection)
+   - u_id (user ID of the user who initiated the last connection)
+   - c_name (name of the channel last connected)
+   - count_receiver_groups (the number of receiver groups this receiver is a part of)
+   - count_receiver_presets (the number of presets this receiver is a part of)
+   - count_users (the number of users who have access to this receiver)
+
+Examples
+
+Input:
+/api/?v=2&amp;method=get_devices&amp;token=xxxxx
+/api/?v=2&amp;method=get_devices&amp;device_type=tx&amp;page=2&amp;results_per_page=3&amp;token=xxxxx
+
+Output:
+
+&lt;api_response&gt;
+   &lt;version&gt;2&lt;/version&gt;
+   &lt;timestamp&gt;2012-09-12 14:56:11&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;page&gt;2&lt;/page&gt;
+   &lt;results_per_page&gt;3&lt;/results_per_page&gt;
+   &lt;total_devices&gt;12&lt;/total_devices&gt;
+   &lt;count_devices&gt;3&lt;/count_devices&gt;
+   &lt;devices&gt;
+      &lt;device item="4"&gt;
+         &lt;d_id&gt;170&lt;/d_id&gt;
+         &lt;d_serial_number&gt;1409A0000159&lt;/d_serial_number&gt;
+         &lt;d_mac_address&gt;00:0F:58:01:6E:3D&lt;/d_mac_address&gt;
+         &lt;d_mac_address2&gt;00:0F:58:5B:6E:3D&lt;/d_mac_address2&gt;
+         &lt;d_name&gt;RX 123&lt;/d_name&gt;
+         &lt;d_online&gt;1&lt;/d_online&gt;
+         &lt;d_online2&gt;0&lt;/d_online2&gt;
+         &lt;d_type&gt;rx&lt;/d_type&gt;
+         &lt;d_version&gt;2&lt;/d_version&gt;
+         &lt;d_variant&gt;&lt;/d_variant&gt;
+         &lt;d_ip_address&gt;10.10.10.66&lt;/d_ip_address&gt;
+         &lt;d_ip_address2&gt;10.10.10.67&lt;/d_ip_address2&gt;
+         &lt;d_description&gt;&lt;/d_description&gt;
+         &lt;d_location&gt;Server Rack 3&lt;/d_location&gt;
+         &lt;d_configured&gt;1&lt;/d_configured&gt;
+         &lt;d_valid_firmware&gt;1&lt;/d_valid_firmware&gt;
+         &lt;d_valid_backup_firmware&gt;1&lt;/d_valid_backup_firmware&gt;
+         &lt;d_firmware&gt;2.3.16682&lt;/d_firmware&gt;
+         &lt;d_backup_firmware&gt;2.3.16682&lt;/d_backup_firmware&gt;
+         &lt;d_date_added&gt;2012-07-14 01:37:07&lt;/d_date_added&gt;
+         &lt;d_status&gt;1&lt;/d_status&gt;
+         &lt;con_exclusive&gt;0&lt;/con_exclusive&gt;
+         &lt;con_control&gt;1&lt;/con_control&gt;
+         &lt;con_start_time&gt;2012-09-07 13:33:19&lt;/con_start_time&gt;
+         &lt;con_end_time/&gt;
+         &lt;u_username&gt;admin&lt;/u_username&gt;
+         &lt;u_id&gt;1&lt;/u_id&gt;
+         &lt;c_name&gt;Channel 1&lt;/c_name&gt;
+         &lt;count_receiver_groups&gt;1&lt;/count_receiver_groups&gt;
+         &lt;count_receiver_presets&gt;2&lt;/count_receiver_presets&gt;
+         &lt;count_users&gt;1&lt;/count_users&gt;
+      &lt;/device&gt;
+   &lt;/devices&gt;
+&lt;/api_response&gt;
+
+&lt;api_response&gt;
+   &lt;version&gt;2&lt;/version&gt;
+   &lt;timestamp&gt;2012-09-12 14:56:11&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;page&gt;1&lt;/page&gt;
+   &lt;results_per_page&gt;1&lt;/results_per_page&gt;
+   &lt;total_devices&gt;1&lt;/total_devices&gt;
+   &lt;count_devices&gt;1&lt;/count_devices&gt;
+   &lt;devices&gt;
+      &lt;device item="1"&gt;
+         &lt;d_id&gt;64&lt;/d_id&gt;
+         &lt;d_serial_number/&gt;
+         &lt;d_mac_address&gt;00:0F:58:01:56:85&lt;/d_mac_address&gt;
+         &lt;d_mac_address2&gt;00:0F:58:5B:56:85&lt;/d_mac_address2&gt;
+         &lt;d_name&gt;TX 456&lt;/d_name&gt;
+         &lt;d_online&gt;0&lt;/d_online&gt;
+         &lt;d_online2&gt;0&lt;/d_online2&gt;
+         &lt;d_type&gt;tx&lt;/d_type&gt;
+         &lt;d_version&gt;1&lt;/d_version&gt;
+         &lt;d_variant&gt;&lt;/d_variant&gt;
+         &lt;d_ip_address&gt;1.1.201.31&lt;/d_ip_address&gt;
+         &lt;d_ip_address2&gt;1.1.201.32&lt;/d_ip_address2&gt;
+         &lt;d_description&gt;&lt;/d_description&gt;
+         &lt;d_location&gt;&lt;/d_location&gt;
+         &lt;d_configured&gt;1&lt;/d_configured&gt;
+         &lt;d_valid_firmware&gt;1&lt;/d_valid_firmware&gt;
+         &lt;d_valid_backup_firmware&gt;1&lt;/d_valid_backup_firmware&gt;
+         &lt;d_firmware&gt;2.1.15747&lt;/d_firmware&gt;
+         &lt;d_backup_firmware&gt;2.1.15747&lt;/d_backup_firmware&gt;
+         &lt;d_date_added&gt;2012-07-13 17:50:04&lt;/d_date_added&gt;
+         &lt;d_status&gt;0&lt;/d_status&gt;
+         &lt;count_transmitter_channels&gt;3&lt;/count_transmitter_channels&gt;
+         &lt;count_transmitter_presets&gt;1&lt;/count_transmitter_presets&gt;
+      &lt;/device&gt;
+   &lt;/devices&gt;
+&lt;/api_response&gt;
+</pre><br><a id="get_channels"></a><h3>get_channels</h3><em>This method was last updated in API version 4, and is compatible with API requests from version 2 onwards</em><br><pre>This method returns a list of channels available to the authenticated user, for a specific receiver.
+ It was updated in version 4 to include additional information.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- page (page number to start showing results for, default = 1)
+- results_per_page (number of results per page, default = 1000)
+- device_id (ID of the receiver that this channel will be connected to. Recommended to ensure full checks for connection mode availability.
+- filter_c_name (channel name search string)
+- filter_c_description (channel description search string)
+- filter_c_location (channel location search string)
+- filter_favourites (set this non-empty to only show a user's favourites)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success
+- page (page number)
+- results_per_page (number of results per page, default = unlimited)
+- count_channels - the number of channels on this page, available to the authenticated user
+- for each channel:
+   - attribute: item (e.g. 17th channel)
+   - c_id (channel id)
+	- c_name (channel name)
+	- c_description (channel description)
+	- c_location (channel location)
+	- c_favourite (true if this channel is in the user's favourites, 0-9 if it's a numbered shortcut)
+   - view_button (disabled/enabled/hidden - whether the user can connect to the preset in video-only mode.
+     disabled = no, because something is in use by someone else. hidden = never. enabled = yes
+     If the device_id of the proposed receiver to be used in the connection is not provided,
+     this will not necessarily be an accurate indication of whether other connections may actually interfere)
+   - shared_button (disabled/enabled/hidden - as above, but in shared mode)
+   - control_button (disabled/enabled/hidden - as above, but in exclusive mode)
+   - exclusive_button (disabled/enabled/hidden - as above, but in private mode)
+
+Additional channel output values in version 4:
+   - c_video1 (device ID)
+   - c_video1_head (1|2)
+   - c_video2 (device ID)
+   - c_video2_head (1|2)
+   - c_audio (device ID)
+   - c_usb (device ID)
+   - c_serial (device ID)
+
+Examples
+
+Input:
+/api/?v=2&amp;method=get_channels&amp;token=xxxxx
+
+Version 2 output:
+
+&lt;api_response&gt;
+   &lt;version&gt;2&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-14 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;page&gt;1&lt;/page&gt;
+   &lt;results_per_page&gt;10&lt;/results_per_page&gt;
+   &lt;count_channels&gt;2&lt;/count_channels&gt;
+   &lt;channel item="1"&gt;
+      &lt;c_id&gt;3&lt;/c_id&gt;
+      &lt;c_name&gt;Channel 1&lt;/c_name&gt;
+      &lt;c_description&gt;Description for Channel 1&lt;/c_description&gt;
+      &lt;c_location&gt;Location of Channel 1&lt;/c_location&gt;
+      &lt;c_favourite&gt;false&lt;/c_favourite&gt;
+      &lt;view_button&gt;disabled&lt;/view_button&gt;
+      &lt;shared_button&gt;disabled&lt;/shared_button&gt;
+      &lt;control_button&gt;disabled&lt;/control_button&gt;
+      &lt;exclusive_button&gt;disabled&lt;/exclusive_button&gt;
+   &lt;/channel&gt;
+   &lt;channel item="2"&gt;
+      &lt;c_id&gt;5&lt;/c_id&gt;
+      &lt;c_name&gt;Channel 2&lt;/c_name&gt;
+      &lt;c_description&gt;Description for Channel 2&lt;/c_description&gt;
+      &lt;c_location&gt;Location of Channel 2&lt;/c_location&gt;
+      &lt;c_favourite&gt;2&lt;/c_favourite&gt;
+      &lt;view_button&gt;enabled&lt;/view_button&gt;
+      &lt;shared_button&gt;enabled&lt;/shared_button&gt;
+      &lt;control_button&gt;enabled&lt;/control_button&gt;
+      &lt;exclusive_button&gt;hidden&lt;/exclusive_button&gt;
+   &lt;/channel&gt;
+&lt;/api_response&gt;
+</pre><br><a id="get_presets"></a><h3>get_presets</h3><em>This method was last updated in API version 1, and is compatible with API requests from version 1 onwards</em><br><pre>This simple method returns a list of presets available to the authenticated user.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- results_per_page (number of results per page, default = 1000)
+- page (page number to start showing results for, default = 1)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success
+- page (page number)
+- results_per_page (number of results per page, default = unlimited)
+- total_presets - the total number of presets available to the authenticaed user
+- count_presets - the number of presets on this page, available to the authenticated user
+- for each connection_preset:
+   - attribute: item (e.g. 17th preset)
+   - cp_id (preset id)
+	- cp_name (preset name)
+	- cp_description (preset description)
+	- cp_pairs (the number of channel-receiver pairs in this preset)
+   - problem_cp_pairs (the number of channel-receiver pairs that are mis-configured
+     (e.g. receiver offline, receiver not defined)
+   - cp_active (whether all, any, or none of the channel-receiver pairs in this preset are
+     currently connected; values are 'full', 'partial', and 'none')
+   - connected_rx_count (the number of receivers in this preset that are already connected)
+   - view_button (disabled/enabled/hidden - whether the user can connect to the preset in video-only mode.
+     disabled = no, because something is in use by someone else. hidden = never. enabled = yes)
+   - shared_button (disabled/enabled/hidden - as above, but in shared mode)
+   - control_button (disabled/enabled/hidden - as above, but in exclusive mode)
+   - exclusive_button (disabled/enabled/hidden - as above, but in private mode)
+
+Examples
+
+Input:
+/api/?v=1&amp;method=get_presets&amp;token=xxxxx
+
+Output:
+
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-14 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;page&gt;1&lt;/page&gt;
+   &lt;results_per_page&gt;10&lt;/results_per_page&gt;
+   &lt;total_presets&gt;2&lt;/total_presets&gt;
+   &lt;count_presets&gt;2&lt;/count_presets&gt;
+   &lt;connection_preset item="1"&gt;
+      &lt;cp_id&gt;3&lt;/cp_id&gt;
+      &lt;cp_name&gt;Preset 1&lt;/cp_name&gt;
+      &lt;cp_description&gt;Description for Preset 1&lt;/cp_description&gt;
+      &lt;cp_pairs&gt;1&lt;/cp_pairs&gt;
+      &lt;problem_cp_pairs/&gt;
+      &lt;cp_active&gt;full&lt;/cp_active&gt;
+      &lt;connected_rx_count&gt;1&lt;/connected_rx_count&gt;
+      &lt;view_button&gt;disabled&lt;/view_button&gt;
+      &lt;shared_button&gt;disabled&lt;/shared_button&gt;
+      &lt;control_button&gt;disabled&lt;/control_button&gt;
+      &lt;exclusive_button&gt;disabled&lt;/exclusive_button&gt;
+   &lt;/connection_preset&gt;
+   &lt;connection_preset item="2"&gt;
+      &lt;cp_id&gt;4&lt;/cp_id&gt;
+      &lt;cp_name&gt;Preset 2&lt;/cp_name&gt;
+      &lt;cp_description&gt;Description for Preset 2&lt;/cp_description&gt;
+      &lt;cp_pairs&gt;2&lt;/cp_pairs&gt;
+      &lt;problem_cp_pairs/&gt;
+      &lt;cp_active&gt;none&lt;/cp_active&gt;
+      &lt;connected_rx_count/&gt;
+      &lt;view_button&gt;enabled&lt;/view_button&gt;
+      &lt;shared_button&gt;hidden&lt;/shared_button&gt;
+      &lt;control_button&gt;hidden&lt;/control_button&gt;
+      &lt;exclusive_button&gt;hidden&lt;/exclusive_button&gt;
+   &lt;/connection_preset&gt;
+&lt;/api_response&gt;
+</pre><br><a id="connect_channel"></a><h3>connect_channel</h3><em>This method was last updated in API version 5, and is compatible with API requests from version 2 onwards</em><br><pre>This simple method connects a receiver to a channel.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- c_id - the ID of the channel (acquired from get_channels)
+- rx_id - the ID of the receiver (acquired from get_devices)
+- mode (optional, 'v', 's', 'e', 'p' - defaults to 's') - the mode in which to connect the channel
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (optional, if anything went wrong with connecting the channel)
+
+Examples
+
+Input:
+/api/?v=5&amp;method=connect_channel&amp;token=xxxxx&amp;c_id=1&amp;rx_id=2&amp;mode=e
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;2&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+
+or
+
+&lt;api_response&gt;
+   &lt;version&gt;2&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;0&lt;/success&gt;
+   &lt;errors&gt;
+      &lt;error&gt;
+         &lt;code&gt;231&lt;/code&gt;
+         &lt;msg&gt;ERROR - private connection not available&lt;/msg&gt;
+      &lt;/error&gt;
+   &lt;/errors&gt;
+&lt;/api_response&gt;
+</pre><br><a id="connect_preset"></a><h3>connect_preset</h3><em>This method was last updated in API version 5, and is compatible with API requests from version 1 onwards</em><br><pre>This simple method connects all channel-receiver pairs in a preset.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- id - the ID of the preset (acquired from get_presets)
+- mode (optional, 'v', 's', 'e', 'p' - defaults to 's') - the mode in which to connect the preset
+- force (optional, 0/1 - defaults to 0) - whether to ignore errors with some of the preset's pairs or not
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (optional, if anything went wrong with connecting the presets)
+
+Examples
+
+Input:
+/api/?v=5&amp;method=connect_preset&amp;token=xxxxx&amp;id=1&amp;force=1
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+
+or
+
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;0&lt;/success&gt;
+   &lt;errors&gt;
+      &lt;error&gt;
+         &lt;code&gt;210&lt;/code&gt;
+         &lt;msg&gt;".$config['error_codes'][210]."&lt;/msg&gt;
+      &lt;/error&gt;
+   &lt;/errors&gt;
+&lt;/api_response&gt;
+</pre><br><a id="disconnect_channel"></a><h3>disconnect_channel</h3><em>This method was last updated in API version 2, and is compatible with API requests from version 2 onwards</em><br><pre>This method disconnects a receiver, a number of receivers, or all connected receivers.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- rx_id (ID(s) of the receiver, as an integer, or comma-separated set of integers. Optional. If not supplied, all connections will be ended)
+- force - whether to disconnect existing connections by other users, or for offline receivers
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=2&amp;method=disconnect_channel&amp;token=xxxxx (disconnect all your online, connected channels)
+/api/?v=2&amp;method=disconnect_channel&amp;token=xxxxx&amp;rx_id=1 (disconnect channel 1, if you connected it and it's online)
+/api/?v=2&amp;method=disconnect_channel&amp;token=xxxxx&amp;rx_id=1,2,3 (disconnect channels 1, 2, and 3, if you connected them and they're online)
+/api/?v=2&amp;method=disconnect_channel&amp;token=xxxxx&amp;force=1 (force disconnect all connected channels)
+/api/?v=2&amp;method=disconnect_channel&amp;token=xxxxx&amp;rx_id=1,3&amp;force=1 (force disconnect channels 1 and 3)
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;2&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="disconnect_preset"></a><h3>disconnect_preset</h3><em>This method was last updated in API version 1, and is compatible with API requests from version 1 onwards</em><br><pre>This method disconnects all channel-receiver pairs in a preset, or disconnects ALL connections in the whole AIM network.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- id (optional. If not supplied, all connections will be ended)
+- force - whether to ignore errors with some of the preset's pairs or not
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=1&amp;method=disconnect_preset&amp;token=xxxxx&amp;id=1&amp;force=1
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;1&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="create_preset"></a><h3>create_preset</h3><em>This method was last updated in API version 5, and is compatible with API requests from version 3 onwards</em><br><pre>This method creates a new preset.
+The API user must have admin privileges to call this method successfully.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- name (the display name for the new preset)
+- pairs (a comma-separated list of the channel ID–receiver ID pairs for the preset, where each ID in the pair is separated by a hyphen)
+- allowed (the permitted connection modes for the preset. Optional; if omitted, the global setting will be inherited.
+   Permitted values are any combination of the characters:
+      v - video-only
+      s - shared
+      e - exclusive
+      p - private
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+- id (the ID of the new preset, if it was created)
+
+Examples
+
+Input:
+/api/?v=5&amp;method=create_preset&amp;token=xxxxx&amp;name=my_preset&amp;pairs=1-1,1-2,2-3,2-4&amp;allowed=vs
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;3&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;id&gt;5&lt;/id&gt;
+&lt;/api_response&gt;
+</pre><br><a id="delete_preset"></a><h3>delete_preset</h3><em>This method was last updated in API version 3, and is compatible with API requests from version 3 onwards</em><br><pre>This method deletes a preset.
+The API user must have admin privileges to call this method successfully.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- id (the ID of the preset to be deleted)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=3&amp;method=delete_preset&amp;token=xxxxx&amp;id=5
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;3&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="create_channel"></a><h3>create_channel</h3><em>This method was last updated in API version 5, and is compatible with API requests from version 4 onwards</em><br><pre>This method creates a new channel.
+The API user must have admin privileges to call this method successfully.
+NB that, although the source device ID inputs are each optional, at least one is required.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- name (the display name for the new channel)
+- desc (the display description for the new channel. Optional, default is empty.)
+- loc (the display location for the new channel. Optional, default is empty.)
+- allowed (the permitted connection modes for the channel. Optional; if omitted, the global setting will be inherited.
+   Permitted values are any combination of the characters:
+      v - video-only
+      s - shared
+      e - exclusive
+      p - private
+- video1 (device ID of video source 1. Optional, default is empty.)
+- video1head (video head number for source 1. Optional, default is 1.)
+- video2 (device ID of video source 2. Optional, default is empty.)
+- video2head (video head number for source 2. Optional, default is 1.)
+- audio (device ID of the audio source. Optional, default is empty.)
+- usb (device ID of the usb source. Optional, default is empty.)
+- serial (device ID of the serial source. Optional, default is empty.)
+- groupname (the name of a channel group of which the created channel will be a member. Optional, default is empty.)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+- id (the ID of the new channel, if it was created)
+
+Examples
+
+Input:
+/api/?v=5&amp;method=create_channel&amp;token=xxxxx&amp;name=my_channel&amp;video1=21&amp;audio=81&amp;groupname=my_channel_group
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;3&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;id&gt;91&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="delete_channel"></a><h3>delete_channel</h3><em>This method was last updated in API version 4, and is compatible with API requests from version 4 onwards</em><br><pre>This method deletes a channel.
+The API user must have admin privileges to call this method successfully.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- id (the ID of the channel to be deleted)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=4&amp;method=delete_channel&amp;token=xxxxx&amp;id=5
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;4&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="update_device"></a><h3>update_device</h3><em>This method was last updated in API version 5, and is compatible with API requests from version 5 onwards</em><br><pre>This method updates the description and location fields for a device.
+The API user must have admin privileges to call this method successfully.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- id (the ID of the device to be updated)
+- desc (the display description for the device. Optional, if not supplied, the description will not be changed. To delete an existing value, set it to the underscore character.)
+- loc (the display location for the new channel. Optional, if not supplied, the location will not be changed. To delete an existing value, set it to the underscore character.)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=5&amp;method=update_device&amp;token=xxxxx&amp;id=1501&amp;desc=John's Desk&amp;loc=room 5
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;5&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="get_all_c_usb"></a><h3>get_all_c_usb</h3><em>This method was last updated in API version 6, and is compatible with API requests from version 6 onwards</em><br><pre>This method returns a list of the C-USB LAN network extenders.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success
+- count_c_usbs - the total number of C-USB LAN network extenders
+- for each C-USB LAN network extender:
+   - attribute: item (e.g. 17th C-USB LAN extender)
+   - mac (C-USB LAN extender MAC address)
+   - type (rx, tx)
+   - name (customisable name)
+   - online (0, 1)
+   - ip (C-USB LAN extender IP address)
+   - connectedTo (if connected, the MAC address of the connected C-USB LAN extender)
+
+Examples
+
+Input:
+/api/?v=6&amp;method=get_all_c_usb&amp;token=xxxxx
+
+Output:
+
+&lt;api_response&gt;
+   &lt;version&gt;6&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-14 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+   &lt;count_c_usbs&gt;2&lt;/count_c_usbs&gt;
+   &lt;c_usb_lan_extenders&gt;
+      &lt;c_usb item="1"&gt;
+         &lt;mac&gt;aa:aa:aa:aa:aa:aa&lt;/mac&gt;
+         &lt;type&gt;rx&lt;/type&gt;
+         &lt;name&gt;John's Desk&lt;/name&gt;
+         &lt;online&gt;1&lt;/online&gt;
+         &lt;ip&gt;10.10.10.25&lt;/ip&gt;
+         &lt;connectedTo&gt;bb:bb:bb:bb:bb:bb&lt;/connectedTo&gt;
+      &lt;/c_usb&gt;
+      &lt;c_usb item="2"&gt;
+         &lt;mac&gt;bb:bb:bb:bb:bb:bb&lt;/mac&gt;
+         &lt;type&gt;tx&lt;/type&gt;
+         &lt;name&gt;John's PC&lt;/name&gt;
+         &lt;online&gt;1&lt;/online&gt;
+         &lt;ip&gt;10.10.10.27&lt;/ip&gt;
+      &lt;/c_usb&gt;
+   &lt;/c_usb_lan_extenders&gt;
+&lt;/api_response&gt;
+</pre><br><a id="delete_c_usb"></a><h3>delete_c_usb</h3><em>This method was last updated in API version 6, and is compatible with API requests from version 6 onwards</em><br><pre>This method deletes a C-USB LAN network extender.
+The API user must have admin privileges to call this method successfully.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- mac (the C-USB LAN extender MAC address)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=6&amp;method=delete_c_usb&amp;token=xxxxx&amp;mac=aa:aa:aa:aa:aa:aa
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;6&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="update_c_usb"></a><h3>update_c_usb</h3><em>This method was last updated in API version 6, and is compatible with API requests from version 6 onwards</em><br><pre>This method updates the name field for a C-USB LAN network extender. 
+The API user must have admin privileges to call this method successfully.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- mac (the C-USB LAN extender MAC address)
+- name (the new display name for the C-USB LAN extender)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=6&amp;method=update_c_usb&amp;token=xxxxx&amp;mac=aa:aa:aa:aa:aa:aa&amp;name=John's Desk
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;6&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="connect_c_usb"></a><h3>connect_c_usb</h3><em>This method was last updated in API version 6, and is compatible with API requests from version 6 onwards</em><br><pre>This method connects a C-USB LAN network extender receiver 
+to a C-USB LAN network extender transmitter.
+Note that if either the receiver or the transmitter is currently connected, it will have to be disconnected first.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- rx (the MAC address of the C-USB LAN extender receiver)
+- tx (the MAC address of the C-USB LAN extender transmitter)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=6&amp;method=connect_c_usb&amp;token=xxxxx&amp;rx=aa:aa:aa:aa:aa:aa&amp;tx=bb:bb:bb:bb:bb:bb
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;6&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="disconnect_c_usb"></a><h3>disconnect_c_usb</h3><em>This method was last updated in API version 6, and is compatible with API requests from version 6 onwards</em><br><pre>This method disconnects a C-USB LAN network extender receiver.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- mac (the MAC address of the C-USB LAN extender receiver)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=6&amp;method=disconnect_c_usb&amp;token=xxxxx&amp;mac=aa:aa:aa:aa:aa:aa
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;6&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre><br><a id="reboot_devices"></a><h3>reboot_devices</h3><em>This method was last updated in API version 7, and is compatible with API requests from version 7 onwards</em><br><pre>This method sends a reboot command to the specified devices.
+
+Input parameters:
+- token
+- v (the AIM API version this request is designed for)
+- ids (a comma-separated list of IDs of the devices to be rebooted)
+
+Output values:
+- version - the current API version number
+- timestamp - the current server time
+- success (0 = fail, 1 = success)
+- errors (if anything failed, details are returned here)
+
+Examples
+
+Input:
+/api/?v=7&amp;method=reboot_devices&amp;token=xxxxx&amp;ids=101,1701,501
+
+Output:
+&lt;api_response&gt;
+   &lt;version&gt;7&lt;/version&gt;
+   &lt;timestamp&gt;2012-12-12 12:12:12&lt;/timestamp&gt;
+   &lt;success&gt;1&lt;/success&gt;
+&lt;/api_response&gt;
+</pre></body></html>
