@@ -5,7 +5,6 @@ import xmltodict
 class UrlHandler(abc.ABC):
 	"""Abstract URL Handler"""
 
-	@classmethod
 	@abc.abstractmethod
 	def api_call(url:str) -> dict:
 		"""Handle a call to the REST API and return a dictionary result"""
@@ -13,9 +12,9 @@ class UrlHandler(abc.ABC):
 
 class RequestsHandler(UrlHandler):
 
-	def __init__(self, address:str, port:int=80):
-		self._server = str(address)
-		self._port = int(port)
+	def __init__(self, address:str="localhost"):
+		"""UrlHandler using the Requests module"""
+		self.setServerAddress(address)
 	
 	def api_call(self, url:str) -> xmltodict.OrderedDict:
 		"""GET a call to the API"""
@@ -29,7 +28,14 @@ class RequestsHandler(UrlHandler):
 	def _abs_url(self, rel_url:str) -> str:
 		"""Return the absolute URL for an API call"""
 		# TODO: Do better
-		return f"http://{self._server}:{self._port}/{rel_url}"
+		return f"http://{self._server}/{rel_url}"
+	
+	def setServerAddress(self, address:str):
+		"""
+		Set the server address and optional port
+		Example: host_name:80
+		"""
+		self._server = str(address)
 
 class DebugHandler(UrlHandler):
 	
@@ -69,15 +75,3 @@ class DebugHandler(UrlHandler):
 				response = xmltodict.parse(api_response.read()).get("api_response")
 			#	print("Responding with",response)
 			return response
-
-"""
-class RequestsHandler(UrlHandler):
-	
-	import requests
-
-	@classmethod
-	def api_call(url) -> dict:
-		response = requests.get(url)
-		if response.ok:
-			return response.content
-"""
