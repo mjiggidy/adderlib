@@ -1,5 +1,5 @@
 import urllib.parse, typing
-from .urlhandlers import UrlHandler, DebugHandler
+from .urlhandlers import UrlHandler, DebugHandler, RequestsHandler
 from .users import AdderUser
 from .devices import AdderReceiver, AdderTransmitter
 from .channels import AdderChannel
@@ -9,12 +9,12 @@ class AdderRequestError(Exception):
 	pass
 
 class AdderAPI:
-	"""Adderlink API for interacting with devices, channels, and users"""
 
-	def __init__(self, url_handler:UrlHandler=None, user:AdderUser=None, api_version:int=8):
-		self._user = user or AdderUser()
-		self._url_handler = url_handler or DebugHandler()
-		self._api_version = api_version
+	def __init__(self,*,url_handler:typing.Optional[UrlHandler]=None, user:typing.Optional[AdderUser]=None, api_version:typing.Optional[int]=8):
+		"""Adderlink API for interacting with devices, channels, and users"""
+		self.setUser(user or AdderUser())
+		self.setUrlHandler(url_handler or RequestsHandler())
+		self.setApiVersion(api_version)
 
 	# User authentication
 	def login(self, username:str, password:str):
@@ -26,7 +26,7 @@ class AdderAPI:
 		if response.get("success") == "1" and response.get("token") is not None:
 			self._user.set_logged_in(username, response.get("token"))
 	
-	def logout(self) -> bool:
+	def logout(self):
 		"""Log the user out"""
 		url = f"/api/?v={self._api_version}&token={self._user.token}&method=logout"
 		response = self._url_handler.api_call(url)
@@ -37,6 +37,22 @@ class AdderAPI:
 			self._user.set_logged_out()
 		else:
 			raise AdderRequestError()
+		
+	def setUrlHandler(self, handler:UrlHandler):
+		"""Set the UrlHandler to use for AdderAPI URL calls"""
+		if not isinstance(handler, UrlHandler):
+			raise ValueError(f"URL handler {type(handler)} is not an instance of UrlHandler")
+		self._url_handler = handler
+	
+	def setUser(self, user:AdderUser):
+		"""Set the AdderUser to use for AdderAPI calls"""
+		if not isinstance(user, AdderUser):
+			raise ValueError(f"User type{type(user)} is not an instance of AdderUser")
+		self._user = user
+	
+	def setApiVersion(self, version:int):
+		"""Set the API version to use"""
+		self._api_version = int(version)
 	
 	# Device management
 	def getTransmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
@@ -76,6 +92,11 @@ class AdderAPI:
 	def user(self) -> AdderUser:
 		"""Get the current user"""
 		return self._user
+	
+	@property
+	def url_handler(self) -> UrlHandler:
+		"""Get the URL Handler"""
+		return self._url_handler
 	
 	@property
 	def transmitters(self) -> typing.Generator[AdderTransmitter]:
