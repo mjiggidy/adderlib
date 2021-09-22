@@ -11,7 +11,15 @@ class AdderRequestError(Exception):
 class AdderAPI:
 	"""Adderlink API for interacting with devices, channels, and users"""
 
-	def __init__(self, url_handler:UrlHandler=None, user:AdderUser=None, api_version:int=8):
+	def __init__(self, *, username:str=None, password:str=None, url_handler:UrlHandler=None, user:AdderUser=None, api_version:int=8):
+		
+		if user and user.logged_in:
+			self._user = user
+		
+		elif user and user.logged_out and password:
+			self._user = user
+			self.login()
+
 		self._user = user or AdderUser()
 		self._url_handler = url_handler or DebugHandler()
 		self._api_version = api_version
