@@ -6,7 +6,7 @@ class UrlHandler(abc.ABC):
 	"""Abstract URL Handler"""
 
 	@abc.abstractmethod
-	def api_call(url:str) -> dict:
+	def api_call(self, url:str) -> dict:
 		"""Handle a call to the REST API and return a dictionary result"""
 		pass
 
