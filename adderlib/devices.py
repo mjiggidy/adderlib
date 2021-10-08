@@ -163,6 +163,9 @@ class AdderDevice(abc.ABC):
 		"""Type of Adder device"""
 		pass
 
+	def __repr__(self):
+		return f"<{self.__class__.__name__} name=\"{self.name}\" location=\"{self.location}\" type={self.device_type} model={self.model} id={self.id}>"
+
 
 class AdderTransmitter(AdderDevice):
 	"""Adderlink Transmitter (TX) Device"""
