@@ -5,6 +5,13 @@ class AdderChannel:
 	"""Adderlink channel"""
 
 	@enum.unique
+	class ConnectionMode(enum.Enum):
+		VIEW_ONLY = 'v'
+		SHARED    = 's'
+		EXCLUSIVE = 'e'
+		PRIVATE   = 'p'
+
+	@enum.unique
 	class ButtonState(enum.Enum):
 		"""Video-only mode capabilities"""
 		UNKNOWN  = -1
@@ -51,7 +58,7 @@ class AdderChannel:
 	def is_online(self) -> bool:
 		"""Device status"""
 		# TODO: Investigate.  Not in the documentation
-		return self._extended.get("channel_online") == "true"
+		return self._extended.get("channel_online") == "1"
 	
 	@property
 	def is_favorite(self) -> bool:
@@ -155,3 +162,6 @@ class AdderChannel:
 	- c_sensitive
 	- c_rdp_id (RDP ID) only for RDP devices.
 	"""
+
+	def __repr__(self):
+		return f"<{self.__class__.__name__} name=\"{self.name}\" is_online={self.is_online} id={self.id}>"
