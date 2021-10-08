@@ -63,8 +63,7 @@ class AdderAPI:
 
 		if response.get("success") == "1" and "devices" in response:
 			for device in response.get("devices").get("device"):
-				if device.get("d_type") == "tx":
-					yield AdderTransmitter(device)
+				yield AdderTransmitter(device)
 			
 	def getReceivers(self) -> typing.Generator[AdderReceiver, None, None]:
 		"""Request a list of available Adderlink receivers"""
@@ -74,8 +73,7 @@ class AdderAPI:
 
 		if response.get("success") == "1" and "devices" in response:			
 			for device in response.get("devices").get("device"):
-				if device.get("d_type") == "rx":
-					yield AdderReceiver(device)
+				yield AdderReceiver(device)
 	
 	# Channel management
 	def getChannels(self) -> typing.Generator[AdderChannel, None, None]:
@@ -88,6 +86,22 @@ class AdderAPI:
 			for channel in response.get("channels").get("channel"):
 				yield AdderChannel(channel)
 	
+	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED) -> bool:
+		"""Connect a channel to a receiver"""
+
+		url = f"/api/?v={self._api_version}&token={self._user.token}&method=connect_channel&c_id={channel.id}&rx_id={receiver.id}&mode={mode.value}"
+		response = self._url_handler.api_call(url)
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			for error in response.get("errors").get("error"):
+				raise Exception(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+		
+		else:
+			raise Exception("Unknown error")
+	
+	
 	@property
 	def user(self) -> AdderUser:
 		"""Get the current user"""
@@ -99,16 +113,16 @@ class AdderAPI:
 		return self._url_handler
 	
 	@property
-	def transmitters(self) -> typing.Generator[AdderTransmitter]:
+	def transmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Get all Adder transmitters"""
 		return self.getTransmitters()
 	
 	@property
-	def receivers(self) -> typing.Generator[AdderReceiver]:
+	def receivers(self) -> typing.Generator[AdderReceiver, None, None]:
 		"""Get all Adder receivers"""
 		return self.getReceivers()
 	
 	@property
-	def channels(self) -> typing.Generator[AdderChannel]:
+	def channels(self) -> typing.Generator[AdderChannel, None, None]:
 		"""Get all Adder channels"""
 		return self.getChannels()
