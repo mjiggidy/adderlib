@@ -1,8 +1,10 @@
 import urllib.parse, typing
+
 from .urlhandlers import UrlHandler, DebugHandler, RequestsHandler
 from .users import AdderUser
 from .devices import AdderReceiver, AdderTransmitter
 from .channels import AdderChannel
+from .presets import AdderPreset
 
 class AdderRequestError(Exception):
 	"""Adder API request has not returned success"""
@@ -101,6 +103,16 @@ class AdderAPI:
 		else:
 			raise Exception("Unknown error")
 	
+	# Preset management
+	def getPresets(self) -> typing.Generator[AdderPreset, None, None]:
+		"""Request a list of available Adderlink presets"""
+
+		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_presets"
+		response = self._url_handler.api_call(url)
+		
+		if response.get("success") == "1" and "connection_preset" in response:
+			for preset in response.get("connection_preset"):
+				yield AdderPreset(preset)	
 	
 	@property
 	def user(self) -> AdderUser:
