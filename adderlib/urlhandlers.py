@@ -45,6 +45,11 @@ class RequestsHandler(UrlHandler):
 		Example: host_name:80
 		"""
 		self._server = str(address)
+	
+	@property
+	def server_address(self) -> str:
+		"""Get the server address"""
+		return self._server
 
 class DebugHandler(UrlHandler):
 	"""URL handler for debugging with sample XMLs from the documentation"""
