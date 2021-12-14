@@ -14,10 +14,10 @@ class AdderChannel:
 	@enum.unique
 	class ButtonState(enum.Enum):
 		"""Video-only mode capabilities"""
-		UNKNOWN  = -1
-		DISABLED =  0	# No, because something is in use by someone else
-		ENABLED  =  1	# Yes
-		HIDDEN   =  2	# Never
+		UNKNOWN  = "unknown"  # Unknown state
+		DISABLED = "disabled" # Disabled because in use
+		ENABLED  = "enabled"  # Enabled
+		HIDDEN   = "hidden"   # Never allowed
 
 	def __init__(self, properties:dict):
 		self._extended = {key: val for key,val in properties.items()}
@@ -75,52 +75,36 @@ class AdderChannel:
 	def view_button(self) -> ButtonState:
 		"""Indicates the state of the video-only view button"""
 		state = self._extended.get("view_button")
-		if state == "disabled":
-			return self.ButtonState.DISABLED
-		elif state == "enabled":
-			return self.ButtonState.ENABLED
-		elif state == "hidden":
-			return self.ButtonState.HIDDEN
-		else:
+		try:
+			return self.ButtonState(state)
+		except ValueError:
 			return self.ButtonState.UNKNOWN
 	
 	@property
 	def shared_button(self) -> ButtonState:
 		"""Indicates the state of the shared view button"""
 		state = self._extended.get("shared_button")
-		if state == "disabled":
-			return self.ButtonState.DISABLED
-		elif state == "enabled":
-			return self.ButtonState.ENABLED
-		elif state == "hidden":
-			return self.ButtonState.HIDDEN
-		else:
+		try:
+			return self.ButtonState(state)
+		except ValueError:
 			return self.ButtonState.UNKNOWN
 
 	@property
 	def control_button(self) -> ButtonState:
 		"""Indicates the state of the full-control button"""
 		state = self._extended.get("control_button")
-		if state == "disabled":
-			return self.ButtonState.DISABLED
-		elif state == "enabled":
-			return self.ButtonState.ENABLED
-		elif state == "hidden":
-			return self.ButtonState.HIDDEN
-		else:
+		try:
+			return self.ButtonState(state)
+		except ValueError:
 			return self.ButtonState.UNKNOWN
 
 	@property
 	def exclusive_button(self) -> ButtonState:
 		"""Indicates the state of the video-only view button"""
 		state = self._extended.get("exclusive_button")
-		if state == "disabled":
-			return self.ButtonState.DISABLED
-		elif state == "enabled":
-			return self.ButtonState.ENABLED
-		elif state == "hidden":
-			return self.ButtonState.HIDDEN
-		else:
+		try:
+			return self.ButtonState(state)
+		except ValueError:
 			return self.ButtonState.UNKNOWN
 	
 	@property
