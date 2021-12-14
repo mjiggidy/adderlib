@@ -1,6 +1,6 @@
-from setuptools import find_packages, setup
+import setuptools
 
-setup(
+setuptools.setup(
 	name="adderlib",
 	version="0.1",
 	packages=["adderlib"],
