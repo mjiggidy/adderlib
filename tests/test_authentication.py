@@ -19,7 +19,7 @@ class TestAuthentication(unittest.TestCase):
 	
 	def test_valid_logout(self):
 		user = users.AdderUser()
-		ad = adder.AdderAPI(user=user, url_handler=urlhandlers.DebugHandler, api_version=8)
+		ad = adder.AdderAPI(user=user, url_handler=urlhandlers.DebugHandler(), api_version=8)
 		ad.login("test","goodpwd")
 		self.assertTrue(user.logged_in)
 		ad.logout()
