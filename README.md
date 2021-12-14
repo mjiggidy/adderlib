@@ -8,6 +8,5 @@ With `adderlib`, you can:
 - Access properties many properties of the KVM devices
 - Connect receivers to channels
 - Manage presets
-...and so much more!
 
-Well, a little bit more.
+...and so much more!  Well, a little bit more.
