@@ -1,6 +1,9 @@
-import abc, urllib.parse
+import abc, urllib.parse, typing
 import requests
 import xmltodict
+
+class InvalidServerAddressError(RuntimeError):
+	"""The server address provided is missing or invalid"""
 
 class UrlHandler(abc.ABC):
 	"""Abstract URL Handler"""
@@ -20,13 +23,18 @@ class UrlHandler(abc.ABC):
 
 class RequestsHandler(UrlHandler):
 
-	def __init__(self, server_address:str):
+	def __init__(self, server_address:typing.Optional[str]=None):
 		"""UrlHandler using the Requests module"""
 		super().__init__()
-		self.setServerAddress(server_address)
+		self._server_address = None
+		if server_address:
+			self.setServerAddress(server_address)
 	
 	def api_call(self, url:str) -> xmltodict.OrderedDict:
 		"""GET a call to the API"""
+		if not self._server:
+			raise InvalidServerAddressError("Server address is not set")
+
 		response = requests.get(self._abs_url(url))
 		
 		if not response.ok:
