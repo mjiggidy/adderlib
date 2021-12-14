@@ -57,10 +57,14 @@ class AdderAPI:
 		self._api_version = int(version)
 	
 	# Device management
-	def getTransmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
+	def getTransmitters(self, t_id:typing.Optional[int]=None) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Request a list of available Adderlink transmitters"""
 
 		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_devices&device_type=tx"
+
+		if t_id is not None:
+			url += f"&filter_t_id={t_id}"
+
 		response = self._url_handler.api_call(url)
 
 		if response.get("success") == "1" and "devices" in response:
