@@ -57,17 +57,22 @@ class AdderAPI:
 		self._api_version = int(version)
 	
 	# Device management
-	def getTransmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
+	def getTransmitters(self, t_id:typing.Optional[str]=None) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Request a list of available Adderlink transmitters"""
 
 		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_devices&device_type=tx"
+
 		response = self._url_handler.api_call(url)
 
 		if response.get("success") == "1" and "devices" in response:
 			for device in response.get("devices").get("device"):
-				yield AdderTransmitter(device)
+				tx = AdderTransmitter(device)
+				# Quick n dirty filtering since API does not support it natively
+				if t_id is not None and t_id != tx.id:
+					continue
+				yield tx
 			
-	def getReceivers(self) -> typing.Generator[AdderReceiver, None, None]:
+	def getReceivers(self, r_id:typing.Optional[str]=None) -> typing.Generator[AdderReceiver, None, None]:
 		"""Request a list of available Adderlink receivers"""
 
 		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_devices&device_type=rx"
@@ -75,10 +80,14 @@ class AdderAPI:
 
 		if response.get("success") == "1" and "devices" in response:			
 			for device in response.get("devices").get("device"):
-				yield AdderReceiver(device)
+				rx = AdderReceiver(device)
+				# Quick n dirty filtering since API does not support it natively
+				if r_id is not None and r_id != rx.id:
+					continue
+				yield rx
 	
 	# Channel management
-	def getChannels(self) -> typing.Generator[AdderChannel, None, None]:
+	def getChannels(self, c_id:typing.Optional[str]=None) -> typing.Generator[AdderChannel, None, None]:
 		"""Request a list of available Adderlink channels"""
 
 		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_channels"
@@ -86,6 +95,9 @@ class AdderAPI:
 		
 		if response.get("success") == "1" and "channels" in response:
 			for channel in response.get("channels").get("channel"):
+				ch = AdderChannel(channel)
+				if c_id is not None and c_id != ch.id:
+					continue
 				yield AdderChannel(channel)
 	
 	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED) -> bool:
