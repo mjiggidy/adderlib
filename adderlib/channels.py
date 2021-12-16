@@ -126,6 +126,14 @@ class AdderChannel:
 	def exclusive_available(self) -> bool:
 		"""Whether the user may view in video-only mode"""
 		return self.exclusive_button == self.ButtonState.ENABLED
+	
+	
+	def print_undocumented(self):
+		"""Undocumented features"""
+		for property in ["c_video1","c_video1_head","c_video2","c_video2_head","c_audio","c_usb","c_serial","c_usb1", "c_audio1","c_audio2","c_sensitive","c_rdp_id"]:
+			print(f"{property.ljust(16)}: {self._extended.get(property,'Not Set')}")
+		
+
 
 	"""
 	TODO: Additional values not documented
