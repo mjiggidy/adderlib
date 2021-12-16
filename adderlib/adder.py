@@ -116,7 +116,7 @@ class AdderAPI:
 			raise Exception("Unknown error")
 	
 	# Preset management
-	def getPresets(self) -> typing.Generator[AdderPreset, None, None]:
+	def getPresets(self, p_id:typing.Optional[str]=None) -> typing.Generator[AdderPreset, None, None]:
 		"""Request a list of available Adderlink presets"""
 
 		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_presets"
@@ -124,7 +124,34 @@ class AdderAPI:
 		
 		if response.get("success") == "1" and "connection_preset" in response:
 			for preset in response.get("connection_preset"):
-				yield AdderPreset(preset)	
+				p = AdderPreset(preset)
+				if p_id is not None and p_id != p.id:
+					continue
+				yield AdderPreset(preset)
+	
+	def createPreset(self, name:str, pairs:typing.Union[typing.Iterable[AdderPreset.Pair], AdderPreset.Pair], modes:typing.Union[typing.Iterable[AdderChannel.ConnectionMode], AdderChannel.ConnectionMode]) -> bool:
+		"""Create a preset consisting of one or more channel/receiver pairs"""
+
+		if not len(name.strip()):
+			raise ValueError("'name' parameter must not be empty")
+		name_formatted = urllib.parse.quote(name)
+
+		if isinstance(pairs, AdderPreset.Pair):
+			pairs = [pairs]
+		pairs_formatted = ','.join(f"{pair.channel.id}-{pair.receiver.id}" for pair in pairs) # TODO: Handle 'ch.id-rx.id' formatting in Preset __str__?
+
+		if isinstance(modes, AdderChannel.ConnectionMode):
+			modes = [modes]
+		modes_formatted = str().join(mode.value for mode in modes)
+
+		url = f"/api/?v={self._api_version}&token={self._user.token}&method=create_preset&name={name_formatted}&pairs={pairs_formatted}&mode={modes_formatted}"
+		response = self._url_handler.api_call(url)
+		if response.get("success") == "1" and response.get("id"):
+			return self.getPresets(response.get("id"))
+		
+		elif "errors" in response:
+			for error in response.get("errors").get("error"):
+				raise Exception(f"Error {error.get('code','?')}: {error.get('msg','?')}")
 	
 	@property
 	def user(self) -> AdderUser:
