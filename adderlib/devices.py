@@ -1,4 +1,4 @@
-import enum, abc
+import enum, abc, ipaddress, typing
 from datetime import datetime
 from dataclasses import dataclass
 
@@ -34,7 +34,7 @@ class AdderDevice(abc.ABC):
 	@dataclass
 	class NetworkInterface:
 		"""Network interface info"""
-		ip_address:str
+		ip_address:typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address]
 		mac_address:str
 		is_online:bool
 	
@@ -74,17 +74,20 @@ class AdderDevice(abc.ABC):
 		return self._extended.get("d_serial_number") or None
 	
 	@property
-	def ip_addresses(self) -> tuple():
+	def ip_addresses(self) -> typing.Tuple[typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address,None]]:
 		"""IP addresses on the network"""
-		return (self._extended.get("d_ip_address") or None, self._extended.get("d_ip_address2") or None)
+		return (
+			ipaddress.ip_address(self._extended.get("d_ip_address")) if self._extended.get("d_ip_address") else None,
+			ipaddress.ip_address(self._extended.get("d_ip_address2")) if self._extended.get("d_ip_address2") else None,
+		)
 	
 	@property
-	def ip_address(self) -> str:
+	def ip_address(self) -> typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address,None]:
 		"""Primary IP address of the device"""
 		return self.ip_addresses[0] or None
 
 	@property
-	def mac_addresses(self) -> tuple():
+	def mac_addresses(self) -> typing.Tuple[typing.Union[str,None]]:
 		"""MAC addresses of the interfaces"""
 		return (self._extended.get("d_mac_address") or None, self._extended.get("d_mac_address2") or None)
 	
@@ -94,7 +97,7 @@ class AdderDevice(abc.ABC):
 		return self.mac_addresses[0] or None
 
 	@property
-	def interfaces(self) -> tuple():
+	def interfaces(self) -> typing.Tuple[NetworkInterface]:
 		"""Return network interfaces"""
 		return (
 			self.NetworkInterface(self.ip_addresses[0], self.mac_addresses[0], int(self._extended.get("d_online",-1))>0),
@@ -207,7 +210,10 @@ class AdderReceiver(AdderDevice):
 	@property
 	def connection_start(self) -> datetime:
 		"""Time the last known connection started"""
-		return datetime.fromisoformat(self._extended.get("con_start_time"))
+		if self._extended.get("con_start_time") is not None:
+			return datetime.fromisoformat(self._extended.get("con_start_time"))
+		else:
+			return None
 		
 	@property
 	def connection_end(self) -> datetime:
