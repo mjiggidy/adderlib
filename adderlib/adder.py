@@ -65,7 +65,15 @@ class AdderAPI:
 		response = self._url_handler.api_call(url)
 
 		if response.get("success") == "1" and "devices" in response:
-			for device in response.get("devices").get("device"):
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_devices") == "1":
+				transmitters_list = [response.get("devices").get("device")]
+			else:
+				transmitters_list = response.get("devices").get("device")
+
+
+			for device in transmitters_list:
 				tx = AdderTransmitter(device)
 				# Quick n dirty filtering since API does not support it natively
 				if t_id is not None and t_id != tx.id:
@@ -79,7 +87,14 @@ class AdderAPI:
 		response = self._url_handler.api_call(url)
 
 		if response.get("success") == "1" and "devices" in response:			
-			for device in response.get("devices").get("device"):
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_devices") == "1":
+				receivers_list = [response.get("devices").get("device")]
+			else:
+				receivers_list = response.get("devices").get("device")
+
+			for device in receivers_list:
 				rx = AdderReceiver(device)
 				# Quick n dirty filtering since API does not support it natively
 				if r_id is not None and r_id != rx.id:
@@ -87,16 +102,23 @@ class AdderAPI:
 				yield rx
 	
 	# Channel management
-	def getChannels(self, c_id:typing.Optional[str]=None) -> typing.Generator[AdderChannel, None, None]:
+	def getChannels(self, id:typing.Optional[str]=None, name:typing.Optional[str]="") -> typing.Generator[AdderChannel, None, None]:
 		"""Request a list of available Adderlink channels"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_channels"
+		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_channels&filter_c_name={urllib.parse.quote(name or '')}"
 		response = self._url_handler.api_call(url)
 		
 		if response.get("success") == "1" and "channels" in response:
-			for channel in response.get("channels").get("channel"):
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_channels") == "1":
+				channel_list = [response.get("channels").get("channel")]
+			else:
+				channel_list = response.get("channels").get("channel")
+
+			for channel in channel_list:
 				ch = AdderChannel(channel)
-				if c_id is not None and c_id != ch.id:
+				if id is not None and id != ch.id:
 					continue
 				yield AdderChannel(channel)
 	
@@ -109,8 +131,8 @@ class AdderAPI:
 			return True
 		
 		elif "errors" in response:
-			for error in response.get("errors").get("error"):
-				raise Exception(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
 		
 		else:
 			raise Exception("Unknown error")
