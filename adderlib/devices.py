@@ -24,12 +24,12 @@ class AdderDevice(abc.ABC):
 	@enum.unique
 	class DeviceModel(enum.Enum):
 		"""AdderLink device models"""
-		UNKNOWN  = -1
-		ALIF1000 =  0
-		ALIF2002 =  1
-		ALIF2112 =  2
-		ALIF1002 =  3
-		ALIF2020 =  4 
+		UNKNOWN  =  '?'
+		ALIF1000 =  '1'
+		ALIF2002 =  'b'
+		ALIF2112 =  'v'
+		ALIF1002 =  's'
+		ALIF2020 =  't'
 	
 	@dataclass
 	class NetworkInterface:
@@ -142,23 +142,16 @@ class AdderDevice(abc.ABC):
 	@property
 	def model(self) -> DeviceModel:
 		"""Device model"""
-		if self._extended.get("d_version") == '1':
-			return self.DeviceModel.ALIF1000
-		
-		elif self._extended.get("d_variant") == 'b':
-			return self.DeviceModel.ALIF2002
-
-		elif self._extended.get("d_variant") == 'v':
-			return self.DeviceModel.ALIF2002
-		
-		elif self._extended.get("d_variant") == 's':
-			return self.DeviceModel.ALIF1002
-
-		elif self._extended.get("d_variant") == 't':
-			return self.DeviceModel.ALIF2020
-
-		else:
+		try:
+			if self._extended.get("d_version") == '1':
+				return self.DeviceModel.ALIF1000
+			else:
+				return self.DeviceModel(self._extended.get("d_variant") == 'b')
+		except:
+			# print(self._extended.get("d_version"), self._extended.get("d_variant"))
 			return self.DeviceModel.UNKNOWN
+
+
 
 	@property
 	@abc.abstractmethod
