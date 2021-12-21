@@ -136,6 +136,31 @@ class AdderAPI:
 		
 		else:
 			raise Exception("Unknown error")
+		
+	def disconnectFromChannel(self, receiver:typing.Union[AdderReceiver, typing.Iterable[AdderReceiver]], force:typing.Optional[bool]=False) -> bool:
+		"""Disconnect a receiver -- or iterable of receivers -- from its current channel"""
+		receiver = [receiver] if isinstance(receiver, AdderReceiver) else receiver
+
+		params = {
+			"v":self._api_version,
+			"token": self._user.token,
+			"method":"disconnect_channel",
+			"rx_id":','.join(x.id for x in receiver)
+		}
+		if force:
+			params.update({"force":1})
+
+		url = f"/api/?{urllib.parse.urlencode(params)}"
+		response = self._url_handler.api_call(url)
+		
+		if response.get("success") == "1":
+			return True
+
+		elif "errors" in response:
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+		
+
 	
 	# Preset management
 	def getPresets(self) -> typing.Generator[AdderPreset, None, None]:
@@ -146,7 +171,7 @@ class AdderAPI:
 		
 		if response.get("success") == "1" and "connection_preset" in response:
 			for preset in response.get("connection_preset"):
-				yield AdderPreset(preset)	
+				yield AdderPreset(preset)
 	
 	@property
 	def user(self) -> AdderUser:
