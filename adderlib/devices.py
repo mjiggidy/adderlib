@@ -201,7 +201,7 @@ class AdderReceiver(AdderDevice):
 	# Connection info
 
 	@property
-	def connection_start(self) -> datetime:
+	def connection_start(self) -> typing.Optional[datetime]:
 		"""Time the last known connection started"""
 		if self._extended.get("con_start_time") is not None:
 			return datetime.fromisoformat(self._extended.get("con_start_time"))
@@ -209,7 +209,7 @@ class AdderReceiver(AdderDevice):
 			return None
 		
 	@property
-	def connection_end(self) -> datetime:
+	def connection_end(self) -> typing.Optional[datetime]:
 		"""Time the last known connection was ended.  Returns None if connection is current."""
 		if self._extended.get("con_end_time") is not None:
 			return datetime.fromisoformat(self._extended.get("con_end_time"))
@@ -220,9 +220,9 @@ class AdderReceiver(AdderDevice):
 	def connection_control(self) -> ConnectionControlType:
 		"""Control mode of the last known connection"""
 		con_type = int(self._extended.get("con_control", -1))
-		if con_type in range(1,4):
+		try:
 			return self.ConnectionControlType(con_type)
-		else:
+		except Exception:
 			return self.ConnectionControlType(-1)
 	
 	@property
@@ -233,11 +233,11 @@ class AdderReceiver(AdderDevice):
 	@property
 	def is_connected(self) -> bool:
 		"""Is the receiver currently connected to a channel"""
-		return self.connection_start and self.connection_end
+		return self.connection_start and not self.connection_end
 	
 	# Connected user info
 	@property
-	def last_username(self) -> str:
+	def last_username(self) -> typing.Optional[str]:
 		"""Last known username"""
 		return self._extended.get("u_username") or None
 	
