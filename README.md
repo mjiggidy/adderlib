@@ -14,4 +14,4 @@ With `adderlib`, you can:
 
 ## Customizable
 
-Boy oh boy is this customizable!  An `UrlHandler` abstract class is provided.  Subclass this and override the `api_call()` method to communicate with the server however you wish!  I sure spent a lot of time on the `RequestsHandler` class, which uses the [`requests`](psf/requests) library but that's ok.
+Boy oh boy is this customizable!  An `UrlHandler` abstract class is provided.  Subclass this and override the `api_call()` method to communicate with the server however you wish!  I sure spent a lot of time on the `RequestsHandler` class, which uses the [`requests`](https://github.com/psf/requests) library but that's ok.
