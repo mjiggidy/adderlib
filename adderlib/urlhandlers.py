@@ -9,7 +9,7 @@ class UrlHandler(abc.ABC):
 	"""Abstract URL Handler"""
 
 	@abc.abstractclassmethod
-	def api_call(cls, server_address:urllib.parse.ParseResult, rel_url:str, args:dict) -> dict:
+	def api_call(cls, server_address:urllib.parse.ParseResult, args:dict) -> dict:
 		"""
 		Handle a call to the REST API and return a dictionary result
 		Data from the Adder API is returned as an XML document and should be returned as a dictionary
