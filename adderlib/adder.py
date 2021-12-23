@@ -171,8 +171,16 @@ class AdderAPI:
 	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED) -> bool:
 		"""Connect a channel to a receiver"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=connect_channel&c_id={channel.id}&rx_id={receiver.id}&mode={mode.value}"
-		response = self._url_handler.api_call(url)
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"connect_channel",
+			"c_id":channel.id,
+			"rx_id":receiver.id,
+			"mode":mode.value
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
 		if response.get("success") == "1":
 			return True
 		
@@ -187,17 +195,15 @@ class AdderAPI:
 		"""Disconnect a receiver -- or iterable of receivers -- from its current channel"""
 		receiver = [receiver] if isinstance(receiver, AdderReceiver) else receiver
 
-		params = {
+		args = {
 			"v":self._api_version,
 			"token": self._user.token,
 			"method":"disconnect_channel",
-			"rx_id":','.join(x.id for x in receiver)
+			"rx_id":','.join(x.id for x in receiver),
+			"force":int(force)
 		}
-		if force:
-			params.update({"force":1})
 
-		url = f"/api/?{urllib.parse.urlencode(params)}"
-		response = self._url_handler.api_call(url)
+		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
 			return True
