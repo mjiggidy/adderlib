@@ -25,7 +25,7 @@ class UrlHandler(abc.ABC):
 	@classmethod
 	def _build_url(cls, server_address:urllib.parse.ParseResult, args:dict) -> str:
 		"""Build a full URL for an API request"""
-		return urllib.parse.urlencode(server_address.geturl(), f"/api/?{urllib.parse.urlencode(args)}")
+		return urllib.parse.urljoin(server_address.geturl(), f"/api/?{urllib.parse.urlencode(args)}")
 
 class RequestsHandler(UrlHandler):
 	"""Request handler using the `requests` library"""
