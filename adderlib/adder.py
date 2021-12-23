@@ -1,3 +1,4 @@
+import abc
 import urllib.parse, typing
 
 from .urlhandlers import UrlHandler, DebugHandler, RequestsHandler
@@ -12,26 +13,54 @@ class AdderRequestError(Exception):
 
 class AdderAPI:
 
-	def __init__(self,*,url_handler:typing.Optional[UrlHandler]=None, user:typing.Optional[AdderUser]=None, api_version:typing.Optional[int]=8):
+	def __init__(self,server_address:str,*,url_handler:typing.Optional[UrlHandler]=None, user:typing.Optional[AdderUser]=None, api_version:typing.Optional[int]=8):
 		"""Adderlink API for interacting with devices, channels, and users"""
-		self.setUser(user or AdderUser())
-		self.setUrlHandler(url_handler or RequestsHandler())
-		self.setApiVersion(api_version)
 
+		self._setServerAddress(server_address)
+		self.setUrlHandler(url_handler or RequestsHandler())
+		self.setUser(user or AdderUser())
+		self.setApiVersion(api_version)
+	
+	def _setServerAddress(self, server_address:str):
+		"""Set the server address to use"""
+
+		# If no schema defined, indicate that properly in the address
+		if "//" not in server_address:
+			server_address = "//" + server_address
+
+		self._server_address = urllib.parse.urlparse(server_address, scheme="http")
+	
+	@property
+	def server_address(self) -> urllib.parse.ParseResult:
+		"""Get the server address"""
+		return self._server_address
+		
 	# User authentication
 	def login(self, username:str, password:str):
 		"""Log the user in to the KVM system and retrieve an API token"""
 		
-		url = f"/api/?v={self._api_version}&method=login&username={urllib.parse.quote(username)}&password={urllib.parse.quote(password)}"
-		response = self._url_handler.api_call(url)
+		args = {
+			"v":self._api_version,
+			"method":"login",
+			"username":username,
+			"password":password
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1" and response.get("token") is not None:
 			self._user.set_logged_in(username, response.get("token"))
 	
 	def logout(self):
 		"""Log the user out"""
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=logout"
-		response = self._url_handler.api_call(url)
+
+		args = {
+			"v":self._api_version,
+			"method":"logout",
+			"token":self._user.token
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
 
 		# TODO: More detailed error handling?
 		# TODO: Maybe have the URL handler throw an exception?
@@ -60,9 +89,14 @@ class AdderAPI:
 	def getTransmitters(self, t_id:typing.Optional[str]=None) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Request a list of available Adderlink transmitters"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_devices&device_type=tx"
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_devices",
+			"device_type":"tx"
+		}
 
-		response = self._url_handler.api_call(url)
+		response = self._url_handler.api_call(self._server_address, args)
 
 		if response.get("success") == "1" and "devices" in response:
 
@@ -83,10 +117,16 @@ class AdderAPI:
 	def getReceivers(self, r_id:typing.Optional[str]=None) -> typing.Generator[AdderReceiver, None, None]:
 		"""Request a list of available Adderlink receivers"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_devices&device_type=rx"
-		response = self._url_handler.api_call(url)
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_devices",
+			"device_type":"rx"
+		}
 
-		if response.get("success") == "1" and "devices" in response:			
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1" and "devices" in response:
 
 			# It seems `xmltodict` only returns a list of nodes if there are more than one
 			if response.get("count_devices") == "1":
@@ -105,8 +145,14 @@ class AdderAPI:
 	def getChannels(self, id:typing.Optional[str]=None, name:typing.Optional[str]="") -> typing.Generator[AdderChannel, None, None]:
 		"""Request a list of available Adderlink channels"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_channels&filter_c_name={urllib.parse.quote(name or '')}"
-		response = self._url_handler.api_call(url)
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_channels",
+			"filter_c_name": name or ""
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1" and "channels" in response:
 
@@ -125,8 +171,16 @@ class AdderAPI:
 	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED) -> bool:
 		"""Connect a channel to a receiver"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=connect_channel&c_id={channel.id}&rx_id={receiver.id}&mode={mode.value}"
-		response = self._url_handler.api_call(url)
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"connect_channel",
+			"c_id":channel.id,
+			"rx_id":receiver.id,
+			"mode":mode.value
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
 		if response.get("success") == "1":
 			return True
 		
@@ -141,17 +195,15 @@ class AdderAPI:
 		"""Disconnect a receiver -- or iterable of receivers -- from its current channel"""
 		receiver = [receiver] if isinstance(receiver, AdderReceiver) else receiver
 
-		params = {
+		args = {
 			"v":self._api_version,
 			"token": self._user.token,
 			"method":"disconnect_channel",
-			"rx_id":','.join(x.id for x in receiver)
+			"rx_id":','.join(x.id for x in receiver),
+			"force":int(force)
 		}
-		if force:
-			params.update({"force":1})
 
-		url = f"/api/?{urllib.parse.urlencode(params)}"
-		response = self._url_handler.api_call(url)
+		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
 			return True
@@ -166,8 +218,13 @@ class AdderAPI:
 	def getPresets(self) -> typing.Generator[AdderPreset, None, None]:
 		"""Request a list of available Adderlink presets"""
 
-		url = f"/api/?v={self._api_version}&token={self._user.token}&method=get_presets"
-		response = self._url_handler.api_call(url)
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_presets"
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1" and "connection_preset" in response:
 			for preset in response.get("connection_preset"):

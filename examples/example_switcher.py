@@ -28,7 +28,7 @@ def promptReceivers(api:adder.AdderAPI) -> adder.AdderReceiver:
 	receivers = [x for x in api.getReceivers() if x.status is x.status.ONLINE]
 
 	for idx, rx in enumerate(receivers):
-		print(f"{str(idx+1).rjust(3)}: {rx.name}")
+		print(f"{str(idx+1).rjust(3)}: {rx.name}  (-> {next(api.getChannels(name=rx.channel_name)).name})")
 	if not len(receivers):
 		raise NoDevicesFound("No receivers were found to be online.")
 
@@ -61,14 +61,13 @@ while True:
 		break
 
 # Try to log in
-req = urlhandlers.RequestsHandler(address)
-api = adder.AdderAPI(url_handler=req)
+api = adder.AdderAPI(address)
 api.login(username=username, password=password)
 
 if not api.user.logged_in:
-	sys.exit(f"Unable to log in to {api.url_handler.server_address} as {username}")
+	sys.exit(f"Unable to log in to {api.server_address} as {username}")
 
-print(f"Logged in to {api.url_handler.server_address} as {api.user.username}\n")
+print(f"Logged in to {api.server_address} as {api.user.username}\n")
 
 # Select receiver
 print("Receivers:")
