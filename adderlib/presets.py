@@ -1,7 +1,15 @@
-import enum
+import enum, dataclasses
+from .devices import AdderReceiver
+from .channels import AdderChannel
 
 class AdderPreset:
 	"""Adderlink Preset"""
+
+	@dataclasses.dataclass
+	class Pair:
+		"""A channel/receiver pair"""
+		channel:  AdderChannel
+		receiver: AdderReceiver
 
 	@enum.unique
 	class ActiveState(enum.Enum):

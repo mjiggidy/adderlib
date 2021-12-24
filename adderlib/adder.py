@@ -210,7 +210,7 @@ class AdderAPI:
 
 	
 	# Preset management
-	def getPresets(self) -> typing.Generator[AdderPreset, None, None]:
+	def getPresets(self, id:typing.Optional[str]=None) -> typing.Generator[AdderPreset, None, None]:
 		"""Request a list of available Adderlink presets"""
 
 		args = {
@@ -221,11 +221,110 @@ class AdderAPI:
 
 		response = self._url_handler.api_call(self._server_address, args)
 		
-		if response.get("success") == "1" and "connection_preset" in response:
-			for preset in response.get("connection_preset"):
-				yield AdderPreset(preset)
+		if response.get("success") == "1" and "connection_presets" in response:
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_presets") == "1":
+				presets_list = [response.get("connection_presets").get("connection_preset")]
+			else:
+				presets_list = response.get("connection_presets").get("connection_preset")
+
+			for preset in presets_list:
+				ps = AdderPreset(preset)
+				if id is not None and id != ps.id:
+					continue
+				yield ps
 	
-	def createPreset(self, name:str, )
+	def createPreset(self, name:str, pairs:typing.Union[typing.Iterable[AdderPreset.Pair], AdderPreset.Pair], modes:typing.Union[typing.Iterable[AdderChannel.ConnectionMode], AdderChannel.ConnectionMode]) -> bool:
+		"""Create a preset consisting of one or more channel/receiver pairs"""
+
+		if not len(name.strip()):
+			raise ValueError("'name' parameter must not be empty")
+		name_formatted = urllib.parse.quote(name)
+
+		if isinstance(pairs, AdderPreset.Pair):
+			pairs = [pairs]
+		pairs_formatted = ','.join(f"{pair.channel.id}-{pair.receiver.id}" for pair in pairs) # TODO: Handle 'ch.id-rx.id' formatting in Preset __str__?
+
+		if isinstance(modes, AdderChannel.ConnectionMode):
+			modes = [modes]
+		modes_formatted = str().join(mode.value for mode in modes)
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"create_preset",
+			"name":name_formatted,
+			"pairs":pairs_formatted,
+			"allowed":modes_formatted
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1" and response.get("id"):
+			return self.getPresets(response.get("id"))
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+			#for error in response.get("errors").get("error"):
+			#	raise Exception(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+	
+	def loadPreset(self, preset:AdderPreset, mode:AdderChannel.ConnectionMode, force:typing.Optional[bool]=False):
+		"""Connect a preset"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"connect_preset",
+			"id":preset.id,
+			"mode":mode.value,
+			"force":int(force)
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+		
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+	
+	def unloadPreset(self, preset:AdderPreset, force:typing.Optional[bool]=False):
+		"""Disconnect a preset"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"disconnect_preset",
+			"id":preset.id,
+			"force":int(force)
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+		
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+
+	def deletePreset(self, preset:AdderPreset):
+		"""Delete a preset"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"delete_preset",
+			"id":preset.id
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+		
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
 
 	@property
 	def user(self) -> AdderUser:
