@@ -27,14 +27,25 @@ class AdderAPI:
 		# If no schema defined, indicate that properly in the address
 		if "//" not in server_address:
 			server_address = "//" + server_address
-
-		self._server_address = urllib.parse.urlparse(server_address, scheme="http")
-	
-	@property
-	def server_address(self) -> urllib.parse.ParseResult:
-		"""Get the server address"""
-		return self._server_address
 		
+		self._server_address = urllib.parse.urlparse(server_address, scheme="http")
+
+	def setUrlHandler(self, handler:UrlHandler):
+		"""Set the UrlHandler to use for AdderAPI URL calls"""
+		if not isinstance(handler, UrlHandler):
+			raise ValueError(f"URL handler {type(handler)} is not an instance of UrlHandler")
+		self._url_handler = handler
+
+	def setUser(self, user:AdderUser):
+		"""Set the AdderUser to use for AdderAPI calls"""
+		if not isinstance(user, AdderUser):
+			raise ValueError(f"User type{type(user)} is not an instance of AdderUser")
+		self._user = user
+
+	def setApiVersion(self, version:int):
+		"""Set the API version to use"""
+		self._api_version = int(version)
+
 	# User authentication
 	def login(self, username:str, password:str):
 		"""Log the user in to the KVM system and retrieve an API token"""
@@ -69,22 +80,6 @@ class AdderAPI:
 		else:
 			raise AdderRequestError()
 		
-	def setUrlHandler(self, handler:UrlHandler):
-		"""Set the UrlHandler to use for AdderAPI URL calls"""
-		if not isinstance(handler, UrlHandler):
-			raise ValueError(f"URL handler {type(handler)} is not an instance of UrlHandler")
-		self._url_handler = handler
-	
-	def setUser(self, user:AdderUser):
-		"""Set the AdderUser to use for AdderAPI calls"""
-		if not isinstance(user, AdderUser):
-			raise ValueError(f"User type{type(user)} is not an instance of AdderUser")
-		self._user = user
-	
-	def setApiVersion(self, version:int):
-		"""Set the API version to use"""
-		self._api_version = int(version)
-	
 	# Device management
 	def getTransmitters(self, t_id:typing.Optional[str]=None) -> typing.Generator[AdderTransmitter, None, None]:
 		"""Request a list of available Adderlink transmitters"""
@@ -230,10 +225,17 @@ class AdderAPI:
 			for preset in response.get("connection_preset"):
 				yield AdderPreset(preset)
 	
+	def createPreset(self, name:str, )
+
 	@property
 	def user(self) -> AdderUser:
 		"""Get the current user"""
 		return self._user
+
+	@property
+	def server_address(self) -> urllib.parse.ParseResult:
+		"""Get the server address"""
+		return self._server_address
 	
 	@property
 	def url_handler(self) -> UrlHandler:
