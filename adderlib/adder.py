@@ -235,7 +235,7 @@ class AdderAPI:
 					continue
 				yield ps
 	
-	def createPreset(self, name:str, pairs:typing.Union[typing.Iterable[AdderPreset.Pair], AdderPreset.Pair], modes:typing.Union[typing.Iterable[AdderChannel.ConnectionMode], AdderChannel.ConnectionMode]) -> bool:
+	def createPreset(self, name:str, pairs:typing.Union[typing.Iterable[AdderPreset.Pair], AdderPreset.Pair], modes:typing.Union[typing.Iterable[AdderChannel.ConnectionMode], AdderChannel.ConnectionMode]) -> AdderPreset:
 		"""Create a preset consisting of one or more channel/receiver pairs"""
 
 		if not len(name.strip()):
@@ -262,7 +262,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 
 		if response.get("success") == "1" and response.get("id"):
-			return self.getPresets(response.get("id"))
+			return next(self.getPresets(response.get("id")))
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
