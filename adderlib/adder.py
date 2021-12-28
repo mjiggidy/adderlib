@@ -3,7 +3,7 @@ import urllib.parse, typing
 
 from .urlhandlers import UrlHandler, DebugHandler, RequestsHandler
 from .users import AdderUser
-from .devices import AdderReceiver, AdderTransmitter
+from .devices import AdderDevice, AdderReceiver, AdderTransmitter
 from .channels import AdderChannel
 from .presets import AdderPreset
 
@@ -136,6 +136,39 @@ class AdderAPI:
 					continue
 				yield rx
 	
+	def setDeviceInfo(self, device:AdderDevice, *, description:typing.Optional[str]=None, location:typing.Optional[str]=None):
+		"""Update the information for an existing device"""
+
+		args = {
+			"v": self._api_version,
+			"token": self._user.token,
+			"method": "update_device",
+			"id": device.id
+		}
+
+		# Providing neither arguments will cause an API error anyway.  Might as well check here.
+		if description is None and location is None:
+			raise ValueError("At least one of `description` or `location` must be provided")
+
+		# Set to underscore to properly clear an existing value (passing a blank string won't work)
+		if description is not None:
+			args.update({"desc": '_' if not len(description.strip()) else description})
+		if location is not None:
+			args.update({"loc": '_' if not len(location.strip()) else location})
+
+		response = self._url_handler.api_call(self._server_address, args)			
+			
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+		
+		else:
+			raise Exception("Unknown error")
+
+	
 	# Channel management
 	def getChannels(self, id:typing.Optional[str]=None, name:typing.Optional[str]="") -> typing.Generator[AdderChannel, None, None]:
 		"""Request a list of available Adderlink channels"""
@@ -206,8 +239,24 @@ class AdderAPI:
 		elif "errors" in response:
 			error = response.get("errors").get("error")
 			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
-		
 
+	def deleteChannel(self, channel:AdderChannel) -> bool:
+		"""Delete a channel.  Admin privileges are required."""
+		args = {
+			"v": self._api_version,
+			"token": self._user.token,
+			"method": "delete_channel",
+			"id": channel.id
+		}
+		
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1":
+			return True
+
+		elif "errors" in response:
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")		
 	
 	# Preset management
 	def getPresets(self, id:typing.Optional[str]=None) -> typing.Generator[AdderPreset, None, None]:
