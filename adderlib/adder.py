@@ -428,6 +428,8 @@ class AdderAPI:
 				yield rx
 
 	# C-USB Lan Extender Management
+	# TODO: Currently untested
+	
 	def getUSBTransmitters(self, mac_address:typing.Optional[AdderUSBTransmitter]=None) -> typing.Generator[AdderUSBTransmitter, None, None]:
 		"""Get a list of C-USB LAN Transmitters, optionally filtered by MAC address"""
 
