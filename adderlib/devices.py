@@ -2,6 +2,13 @@ import enum, abc, ipaddress, typing
 from datetime import datetime
 from dataclasses import dataclass
 
+@dataclass
+class NetworkInterface:
+	"""Network interface info"""
+	ip_address:typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address]
+	mac_address:str
+	is_online:bool
+
 
 class AdderDevice(abc.ABC):
 	"""Abstract Adder device"""
@@ -31,12 +38,6 @@ class AdderDevice(abc.ABC):
 		ALIF1002 =  's'
 		ALIF2020 =  't'
 	
-	@dataclass
-	class NetworkInterface:
-		"""Network interface info"""
-		ip_address:typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address]
-		mac_address:str
-		is_online:bool
 	
 	def __init__(self, properties:dict):
 		self._extended = {key: val for key,val in properties.items()}
@@ -97,11 +98,11 @@ class AdderDevice(abc.ABC):
 		return self.mac_addresses[0] or None
 
 	@property
-	def interfaces(self) -> typing.Tuple[NetworkInterface]:
+	def network_interfaces(self) -> typing.Tuple[NetworkInterface]:
 		"""Return network interfaces"""
 		return (
-			self.NetworkInterface(self.ip_addresses[0], self.mac_addresses[0], int(self._extended.get("d_online",-1))>0),
-			self.NetworkInterface(self.ip_addresses[1], self.mac_addresses[1], int(self._extended.get("d_online2",-1))>0)
+			NetworkInterface(self.ip_addresses[0], self.mac_addresses[0], int(self._extended.get("d_online",-1))>0),
+			NetworkInterface(self.ip_addresses[1], self.mac_addresses[1], int(self._extended.get("d_online2",-1))>0)
 		)
 
 	# Firmware verions
@@ -151,10 +152,7 @@ class AdderDevice(abc.ABC):
 			# print(self._extended.get("d_version"), self._extended.get("d_variant"))
 			return self.DeviceModel.UNKNOWN
 
-
-
-	@property
-	@abc.abstractmethod
+	@abc.abstractproperty
 	def device_type(self) -> DeviceType:
 		"""Type of Adder device"""
 		pass
@@ -261,3 +259,52 @@ class AdderReceiver(AdderDevice):
 	def user_count(self) -> int:
 		"""Number of users with access to this receiver"""
 		return int(self._extended.get("count_users")) 
+
+class AdderUSBExtender(abc.ABC):
+	"""Abstract Adder C-USB LAN Extender Device"""
+
+	@enum.unique
+	class DeviceType(enum.Enum):
+		"""Types of Adder C-USB Lan Extenders"""
+		RX = 0
+		TX = 1
+	
+	def __init__(self, properties:dict):
+		self._extended = {key: val for key,val in properties.items()}
+	
+	@abc.abstractproperty
+	def device_type(self) -> DeviceType:
+		"""Type of Adder device"""
+		pass
+	
+	@property
+	def name(self) -> str:
+		"""Device name"""
+		return self._extended.get("d_name") or None
+	
+	@property
+	def ip_address(self) -> typing.Union[ipaddress.IPv4Address, ipaddress.IPv6Address]:
+		return ipaddress.ip_address(self._extended.get("ip")) if self._extended.get("ip") else None
+
+	@property
+	def mac_address(self) -> str:
+		return self._extended.get("mac")
+	
+	@property
+	def is_online(self) -> bool:
+		return self._extended.get("online") == 1
+	
+	@property
+	def network_interface(self) -> NetworkInterface:
+		return NetworkInterface(self.ip_address, self.mac_address, self.is_online)
+
+class AdderUSBTransmitter(AdderUSBExtender):
+	"""Adder C-USB LAN Network Transmitter"""
+
+class AdderUSBReceiver(AdderUSBExtender):
+	"""Adder C-USB Lan Network Receiver"""
+
+	@property
+	def connected_to(self) -> str:
+		"""MAC address of the connected transmitter"""
+		return self._extended.get("connectedTo")

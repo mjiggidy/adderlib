@@ -3,7 +3,7 @@ import urllib.parse, typing
 
 from .urlhandlers import UrlHandler, DebugHandler, RequestsHandler
 from .users import AdderUser
-from .devices import AdderDevice, AdderReceiver, AdderTransmitter
+from .devices import AdderDevice, AdderReceiver, AdderTransmitter, AdderUSBExtender, AdderUSBReceiver, AdderUSBTransmitter
 from .channels import AdderChannel
 from .presets import AdderPreset
 
@@ -167,6 +167,27 @@ class AdderAPI:
 		
 		else:
 			raise Exception("Unknown error")
+	
+	def rebootDevices(self, devices:typing.Union[typing.Iterable[AdderDevice], AdderDevice]):
+		"""Reboot one or more devices"""
+		
+		devices = [devices] if isinstance(devices, AdderDevice) else devices
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"reboot_devices",
+			"ids": ','.join(d.id for d in devices)
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1":
+			return
+		
+		elif "errors" in response:
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
 
 	
 	# Channel management
@@ -374,6 +395,146 @@ class AdderAPI:
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
+	
+	# C-USB Lan Extender Management
+	def getUSBReceivers(self, mac_address:typing.Optional[AdderUSBReceiver]=None) -> typing.Generator[AdderUSBReceiver, None, None]:
+		"""Get a list of C-USB LAN Receivers, optionally filtered by MAC address"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_all_c_usb"
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1" and "c_usb_lan_extenders" in response:
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_c_usbs") == "1":
+				usb_list = [response.get("c_usb_lan_extenders").get("c_usb")]
+			else:
+				usb_list = response.get("c_usb_lan_extenders").get("c_usb")
+
+			for usb in usb_list:
+				if usb.get("type","") != "rx": continue
+
+				rx = AdderUSBReceiver(usb)
+
+				# Quick n dirty filtering since API does not support it natively
+				if mac_address is not None and mac_address != rx.mac_address:
+					continue
+
+				yield rx
+
+	# C-USB Lan Extender Management
+	# TODO: Currently untested
+	
+	def getUSBTransmitters(self, mac_address:typing.Optional[AdderUSBTransmitter]=None) -> typing.Generator[AdderUSBTransmitter, None, None]:
+		"""Get a list of C-USB LAN Transmitters, optionally filtered by MAC address"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_all_c_usb"
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1" and "c_usb_lan_extenders" in response:
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_c_usbs") == "1":
+				usb_list = [response.get("c_usb_lan_extenders").get("c_usb")]
+			else:
+				usb_list = response.get("c_usb_lan_extenders").get("c_usb")
+
+			for usb in usb_list:
+				if usb.get("type","") != "tx": continue
+
+				tx = AdderUSBTransmitter(usb)
+
+				# Quick n dirty filtering since API does not support it natively
+				if mac_address is not None and mac_address != tx.mac_address:
+					continue
+
+				yield tx
+	
+	def deleteUSBExtender(self, usb:AdderUSBExtender):
+		"""Delete a C-USB LAN Transmitter or Receiver"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"delete_c_usb",
+			"mac":usb.mac_address
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+		
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+	
+	def setUSBExtenderInfo(self, usb:AdderUSBExtender, *, name:str):
+		"""Update the information for an existing USB extender"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user._token,
+			"method":"update_c_usb",
+			"mac":usb.mac_address,
+			"name":name
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+	
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+
+
+	def connectUSBExtender(self, receiver:AdderUSBReceiver, transmitter:AdderUSBTransmitter):
+		"""Connect a C-USB LAN Receiver to a Transmitter"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user._token,
+			"method":"connect_c_usb",
+			"rx": receiver.mac_address,
+			"tx": transmitter.mac_address
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+	
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+
+	def disconnectUSBExtender(self, receiver:AdderUSBReceiver):
+		"""Connect a C-USB LAN Receiver to a Transmitter"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user._token,
+			"method":"disconnect_c_usb",
+			"mac": receiver.mac_address,
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+	
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+
 
 	@property
 	def user(self) -> AdderUser:
