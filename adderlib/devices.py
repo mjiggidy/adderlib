@@ -152,13 +152,8 @@ class AdderDevice(abc.ABC):
 			# print(self._extended.get("d_version"), self._extended.get("d_variant"))
 			return self.DeviceModel.UNKNOWN
 
-	@abc.abstractproperty
-	def device_type(self) -> DeviceType:
-		"""Type of Adder device"""
-		pass
-
 	def __repr__(self):
-		return f"<{self.__class__.__name__} name=\"{self.name}\" location=\"{self.location}\" type={self.device_type} model={self.model} id={self.id}>"
+		return f"<{self.__class__.__name__} name=\"{self.name}\" location=\"{self.location}\" model={self.model} id={self.id}>"
 
 
 class AdderTransmitter(AdderDevice):
@@ -174,10 +169,6 @@ class AdderTransmitter(AdderDevice):
 		"""Number of presets that use this device"""
 		return int(self._extended.get("count_transmitter_presets"))
 
-	@property
-	def device_type(self) -> AdderDevice.DeviceType:
-		return AdderDevice.DeviceType.TX
-
 
 class AdderReceiver(AdderDevice):
 	"""Adderlink Receiver (RX) Device"""
@@ -191,10 +182,6 @@ class AdderReceiver(AdderDevice):
 		VIDEO_ONLY =  1
 		EXCLUSIVE  =  2
 		SHARED     =  3
-
-	@property
-	def device_type(self) -> AdderDevice.DeviceType:
-		return AdderDevice.DeviceType.RX
 	
 	# Connection info
 

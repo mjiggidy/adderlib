@@ -9,22 +9,22 @@ api.login(username=sys.argv[2], password=sys.argv[3])
 
 print("\nTransmitters Online:")
 for tx in [tx for tx in api.getTransmitters() if tx.status==tx.DeviceStatus.ONLINE]:
-	pi = tx.interfaces[0]
+	pi = tx.network_interfaces[0]
 	print(f"{tx.name}\t{pi.ip_address}\t{pi.mac_address}\t{tx.status.name}")
 
 print("\nTransmitters Offline:")
 for tx in [tx for tx in api.getTransmitters() if tx.status!=tx.DeviceStatus.ONLINE]:
-	pi = tx.interfaces[0]
+	pi = tx.network_interfaces[0]
 	print(f"{tx.name}\t{pi.ip_address}\t{pi.mac_address}\t{tx.status.name}")
 
 print("\nReceivers Online:")
 for tx in [tx for tx in api.getReceivers() if tx.status==tx.DeviceStatus.ONLINE]:
-	pi = tx.interfaces[0]
+	pi = tx.network_interfaces[0]
 	print(f"{tx.name}\t{pi.ip_address}\t{pi.mac_address}\t{tx.status.name}\t{tx.connection_start}\t{tx.connection_end}")
 
 print("\nReceivers Offline:")
 for tx in [tx for tx in api.getReceivers() if tx.status!=tx.DeviceStatus.ONLINE]:
-	pi = tx.interfaces[0]
+	pi = tx.network_interfaces[0]
 	print(f"{tx.name}\t{pi.ip_address}\t{pi.mac_address}\t{tx.status.name}")
 
 print("")

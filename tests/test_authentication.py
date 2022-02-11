@@ -35,7 +35,7 @@ class TestDevices(unittest.TestCase):
 		
 		tx = next(ad.getTransmitters())
 		self.assertIsInstance(tx, devices.AdderTransmitter)
-		self.assertTrue(tx, tx.interfaces[0].is_online)
+		self.assertTrue(tx, tx.network_interfaces[0].is_online)
 	
 	def test_valid_receiver(self):
 		user = users.AdderUser()
