@@ -217,6 +217,65 @@ class AdderAPI:
 					continue
 				yield AdderChannel(channel)
 	
+	def createChannel(self,
+		name:str, description:typing.Optional[str]=None, location:typing.Optional[str]=None, modes:typing.Optional[list[AdderChannel.ConnectionMode]]=None, 
+		video1:typing.Optional[AdderTransmitter]=None, video1_head:typing.Optional[int]=None,
+		video2:typing.Optional[AdderTransmitter]=None, video2_head:typing.Optional[int]=None,
+		audio:typing.Optional[AdderTransmitter]=None, usb:typing.Optional[AdderTransmitter]=None, serial:typing.Optional[AdderTransmitter]=None,
+		group_name:typing.Optional[str]=None) -> AdderChannel:
+		"""Create a new channel from the specified transmitters"""
+
+		modes = modes or []
+		
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"create_channel",
+			"name":name,
+			"desc":description,
+			"loc":location,
+			"allowed":str().join([m.value for m in modes]).lower(),
+			"groupname":group_name
+		}
+
+		# Video 1
+		if video1:
+			args.update({
+				"video1":video1.id,
+				"video1head":video1_head
+			})
+		
+		# Video 2
+		if video2:
+			args.update({
+				"video2":video2.id,
+				"video2head":video2_head
+			})
+		
+		# Audio
+		if audio:
+			args.update({"audio":audio.id})
+		
+		# USB
+		if usb:
+			args.update({"usb":usb.id})
+		
+		# Serial
+		if serial:
+			args.update({"serial":serial.id})
+		
+		response = self._url_handler.api_call(self._server_address, args)
+		if response.get("success") == "1" and response.get("id"):
+			return next(self.getChannels(id=response.get("id")))
+		
+		elif "errors" in response:
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+		
+		else:
+			raise Exception("Unknown error")
+
+
 	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED) -> bool:
 		"""Connect a channel to a receiver"""
 
