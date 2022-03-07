@@ -550,18 +550,3 @@ class AdderAPI:
 	def url_handler(self) -> UrlHandler:
 		"""Get the URL Handler"""
 		return self._url_handler
-	
-	@property
-	def transmitters(self) -> typing.Generator[AdderTransmitter, None, None]:
-		"""Get all Adder transmitters"""
-		return self.getTransmitters()
-	
-	@property
-	def receivers(self) -> typing.Generator[AdderReceiver, None, None]:
-		"""Get all Adder receivers"""
-		return self.getReceivers()
-	
-	@property
-	def channels(self) -> typing.Generator[AdderChannel, None, None]:
-		"""Get all Adder channels"""
-		return self.getChannels()
