@@ -30,11 +30,13 @@ class UrlHandler(abc.ABC):
 class RequestsHandler(UrlHandler):
 	"""Request handler using the `requests` library"""
 
+	timeout:int=5
+
 	@classmethod
 	def api_call(cls, server_address:urllib.parse.ParseResult, args:dict) -> xmltodict.OrderedDict:
 		"""GET a call to the API"""
 
-		response = requests.get(cls._build_url(server_address, args))
+		response = requests.get(cls._build_url(server_address, args), timeout=cls.timeout)
 		
 		if not response.ok:
 			raise Exception(f"Error contacting {server_address.netloc}: Returned {response.status_code}")
