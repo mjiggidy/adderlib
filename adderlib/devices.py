@@ -37,6 +37,11 @@ class AdderDevice(abc.ABC):
 		ALIF2112 =  'v'
 		ALIF1002 =  's'
 		ALIF2020 =  't'
+		ALIF100T =  'd'
+		ALIF100T_VGA = 'f',
+		ALIF101T_HDMI = 'h',
+		ALIF4021R = '4',
+		ALIFE300R = '8'
 	
 	
 	def __init__(self, properties:dict):
@@ -147,7 +152,7 @@ class AdderDevice(abc.ABC):
 			if self._extended.get("d_version") == '1':
 				return self.DeviceModel.ALIF1000
 			else:
-				return self.DeviceModel(self._extended.get("d_variant") == 'b')
+				return self.DeviceModel(self._extended.get("d_variant"))
 		except:
 			# print(self._extended.get("d_version"), self._extended.get("d_variant"))
 			return self.DeviceModel.UNKNOWN
