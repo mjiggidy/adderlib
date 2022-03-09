@@ -61,6 +61,13 @@ class AdderAPI:
 		
 		if response.get("success") == "1" and response.get("token") is not None:
 			self._user.set_logged_in(username, response.get("token"))
+		
+		elif "errors" in response:
+			error = response.get("errors").get("error")
+			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
+		
+		else:
+			raise Exception("Unknown error")
 	
 	def logout(self):
 		"""Log the user out"""

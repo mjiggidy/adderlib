@@ -66,10 +66,9 @@ class AdderChannel:
 		return self._extended.get("c_favourite") != "false"
 	
 	@property
-	def shortcut(self) -> int:
-		"""Returns the shortcut index if set, otherwise returns None"""
-		pre = self._extended.get("c_favorite","")
-		return int(pre) if pre.isnumeric() else -1
+	def shortcut(self) -> str:
+		"""Returns the shortcut index if set"""
+		return self._extended.get("c_favourite","") if self.is_favorite else ''
 	
 	@property
 	def view_button(self) -> ButtonState:

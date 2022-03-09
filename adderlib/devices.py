@@ -232,9 +232,20 @@ class AdderReceiver(AdderDevice):
 		return self._extended.get("u_username","")
 	
 	@property
-	def last_userid(self) -> int:
+	def last_userid(self) -> str:
 		"""Last known user ID"""
-		return int(self._extended.get("u_userid")) or None
+		print(self._extended)
+		return self._extended.get("u_id","")
+	
+	@property
+	def current_username(self) -> str:
+		"""Name of current user connected"""
+		return self.last_username if self.is_connected else ""
+
+	@property
+	def current_userid(self) -> str:
+		"""User ID of current user connected"""
+		return self.last_userid if self.is_connected else ""
 	
 	# Stats
 	@property
