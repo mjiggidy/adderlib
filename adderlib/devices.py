@@ -45,23 +45,24 @@ class AdderDevice(abc.ABC):
 	
 	
 	def __init__(self, properties:dict):
+		# Do a lil copy
 		self._extended = {key: val for key,val in properties.items()}
 	
 	# Human-friendly descriptions
 	@property
 	def name(self) -> str:
 		"""Device name"""
-		return self._extended.get("d_name") or None
+		return self._extended.get("d_name","")
 
 	@property
 	def description(self) -> str:
 		"""Device description"""
-		return self._extended.get("d_description") or None
+		return self._extended.get("d_description","")
 
 	@property
 	def location(self) -> str:
 		"""Device location"""
-		return self._extended.get("d_location") or None
+		return self._extended.get("d_location","")
 	
 	@property
 	def date_dadded(self) -> datetime:
@@ -72,12 +73,12 @@ class AdderDevice(abc.ABC):
 	@property
 	def id(self) -> str:
 		"""Device ID"""
-		return self._extended.get("d_id") or None
+		return self._extended.get("d_id","")
 	
 	@property
 	def serial_number(self) -> str:
 		"""Device serial number"""
-		return self._extended.get("d_serial_number") or None
+		return self._extended.get("d_serial_number","")
 	
 	@property
 	def ip_addresses(self) -> typing.Tuple[typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address,None]]:
@@ -93,14 +94,14 @@ class AdderDevice(abc.ABC):
 		return self.ip_addresses[0] or None
 
 	@property
-	def mac_addresses(self) -> typing.Tuple[typing.Union[str,None]]:
+	def mac_addresses(self) -> typing.Tuple[str]:
 		"""MAC addresses of the interfaces"""
-		return (self._extended.get("d_mac_address") or None, self._extended.get("d_mac_address2") or None)
+		return (self._extended.get("d_mac_address",""), self._extended.get("d_mac_address2",""))
 	
 	@property
 	def mac_address(self) -> str:
 		"""Primary MAC address"""
-		return self.mac_addresses[0] or None
+		return self.mac_addresses[0]
 
 	@property
 	def network_interfaces(self) -> typing.Tuple[NetworkInterface]:
@@ -114,12 +115,12 @@ class AdderDevice(abc.ABC):
 	@property
 	def firmware(self) -> str:
 		"""Current firmware version"""
-		return self._extended.get("d_firmware") or None
+		return self._extended.get("d_firmware","")
 	
 	@property
 	def backup_firmware(self) -> str:
 		"""Backup firmware version"""
-		return self._extended.get("d_backup_firmware") or None
+		return self._extended.get("d_backup_firmware","")
 	
 	# Status
 	@property
@@ -149,16 +150,15 @@ class AdderDevice(abc.ABC):
 	def model(self) -> DeviceModel:
 		"""Device model"""
 		try:
-			if self._extended.get("d_version") == '1':
-				return self.DeviceModel.ALIF1000
-			else:
+			if self._extended.get("d_version") == '2':
 				return self.DeviceModel(self._extended.get("d_variant"))
+			else:
+				return self.DeviceModel(self._extended.get("d_version"))
 		except:
-			# print(self._extended.get("d_version"), self._extended.get("d_variant"))
 			return self.DeviceModel.UNKNOWN
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} name=\"{self.name}\" location=\"{self.location}\" model={self.model} id={self.id}>"
+		return f"<{self.__class__.__name__} name=\"{self.name}\" location=\"{self.location}\" model={self.model.name} id={self.id}>"
 
 
 class AdderTransmitter(AdderDevice):
@@ -167,12 +167,12 @@ class AdderTransmitter(AdderDevice):
 	@property
 	def channel_count(self) -> int:
 		"""Number of channels that use this device"""
-		return int(self._extended.get("count_transmitter_channels"))
+		return int(self._extended.get("count_transmitter_channels",0))
 	
 	@property
 	def preset_count(self) -> int:
 		"""Number of presets that use this device"""
-		return int(self._extended.get("count_transmitter_presets"))
+		return int(self._extended.get("count_transmitter_presets",0))
 
 
 class AdderReceiver(AdderDevice):
@@ -193,7 +193,7 @@ class AdderReceiver(AdderDevice):
 	@property
 	def connection_start(self) -> typing.Optional[datetime]:
 		"""Time the last known connection started"""
-		if self._extended.get("con_start_time") is not None:
+		if self._extended.get("con_start_time"):
 			return datetime.fromisoformat(self._extended.get("con_start_time"))
 		else:
 			return None
@@ -201,7 +201,7 @@ class AdderReceiver(AdderDevice):
 	@property
 	def connection_end(self) -> typing.Optional[datetime]:
 		"""Time the last known connection was ended.  Returns None if connection is current."""
-		if self._extended.get("con_end_time") is not None:
+		if self._extended.get("con_end_time"):
 			return datetime.fromisoformat(self._extended.get("con_end_time"))
 		else:
 			return None
@@ -218,7 +218,7 @@ class AdderReceiver(AdderDevice):
 	@property
 	def channel_name(self) -> str:
 		"""The name of the last known channel this receiver was connected"""
-		return self._extended.get("c_name")
+		return self._extended.get("c_name","")
 
 	@property
 	def is_connected(self) -> bool:
@@ -227,60 +227,50 @@ class AdderReceiver(AdderDevice):
 	
 	# Connected user info
 	@property
-	def last_username(self) -> typing.Optional[str]:
+	def last_username(self) -> str:
 		"""Last known username"""
-		return self._extended.get("u_username") or None
+		return self._extended.get("u_username","")
 	
 	@property
 	def last_userid(self) -> int:
 		"""Last known user ID"""
-		return int(self._extended.get("u_userid"))
+		return int(self._extended.get("u_userid")) or None
 	
 	# Stats
 	@property
 	def group_count(self) -> int:
 		"""Number of receiver groups this belongs to"""
-		return int(self._extended.get("count_receiver_groups"))
+		return int(self._extended.get("count_receiver_groups",0))
 
 	@property
 	def preset_count(self) -> int:
 		"""Number of receiver presets this belongs to"""
-		return int(self._extended.get("count_receiver_presets"))
+		return int(self._extended.get("count_receiver_presets",0))
 	
 	@property
 	def user_count(self) -> int:
 		"""Number of users with access to this receiver"""
-		return int(self._extended.get("count_users")) 
+		return int(self._extended.get("count_users",0)) 
 
 class AdderUSBExtender(abc.ABC):
 	"""Abstract Adder C-USB LAN Extender Device"""
-
-	@enum.unique
-	class DeviceType(enum.Enum):
-		"""Types of Adder C-USB Lan Extenders"""
-		RX = 0
-		TX = 1
 	
 	def __init__(self, properties:dict):
+		# Do a lil copy
 		self._extended = {key: val for key,val in properties.items()}
-	
-	@abc.abstractproperty
-	def device_type(self) -> DeviceType:
-		"""Type of Adder device"""
-		pass
 	
 	@property
 	def name(self) -> str:
 		"""Device name"""
-		return self._extended.get("d_name") or None
+		return self._extended.get("d_name","")
 	
 	@property
-	def ip_address(self) -> typing.Union[ipaddress.IPv4Address, ipaddress.IPv6Address]:
+	def ip_address(self) -> typing.Union[ipaddress.IPv4Address, ipaddress.IPv6Address, None]:
 		return ipaddress.ip_address(self._extended.get("ip")) if self._extended.get("ip") else None
 
 	@property
 	def mac_address(self) -> str:
-		return self._extended.get("mac")
+		return self._extended.get("mac","")
 	
 	@property
 	def is_online(self) -> bool:
@@ -299,4 +289,4 @@ class AdderUSBReceiver(AdderUSBExtender):
 	@property
 	def connected_to(self) -> str:
 		"""MAC address of the connected transmitter"""
-		return self._extended.get("connectedTo")
+		return self._extended.get("connectedTo","")
