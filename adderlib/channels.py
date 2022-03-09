@@ -25,34 +25,34 @@ class AdderChannel:
 	@property
 	def id(self) -> str:
 		"""Channel ID"""
-		return self._extended.get("c_id") or None
+		return self._extended.get("c_id","")
 	
 	@property
 	def name(self) -> str:
 		"""Channel name"""
-		return self._extended.get("c_name")
+		return self._extended.get("c_name","")
 	
 	@property
 	def description(self) -> str:
 		"""Channel description"""
-		return self._extended.get("c_description")
+		return self._extended.get("c_description","")
 	
 	@property
 	def location(self) -> str:
 		"""Channel location"""
-		return self._extended.get("c_location")
+		return self._extended.get("c_location","")
 	
 	@property
 	def type(self) -> str:
 		"""Channel type"""
 		# TODO: Investigate.  Not in the documentation
-		return self._extended.get("c_channel_type")
+		return self._extended.get("c_channel_type","")
 
 	@property
 	def tx_id(self) -> str:
 		"""Device ID"""
 		# TODO: Investigate.  Not in the documentation
-		return self._extended.get("c_tx_id") or None
+		return self._extended.get("c_tx_id","")
 	
 	@property
 	def is_online(self) -> bool:
@@ -69,7 +69,7 @@ class AdderChannel:
 	def shortcut(self) -> int:
 		"""Returns the shortcut index if set, otherwise returns None"""
 		pre = self._extended.get("c_favorite","")
-		return int(pre) if pre.isnumeric() else None
+		return int(pre) if pre.isnumeric() else -1
 	
 	@property
 	def view_button(self) -> ButtonState:
@@ -128,7 +128,7 @@ class AdderChannel:
 		return self.exclusive_button == self.ButtonState.ENABLED
 	
 	
-	def print_undocumented(self):
+	def _print_undocumented(self):
 		"""Undocumented features"""
 		for property in ["c_video1","c_video1_head","c_video2","c_video2_head","c_audio","c_usb","c_serial","c_usb1", "c_audio1","c_audio2","c_sensitive","c_rdp_id"]:
 			print(f"{property.ljust(16)}: {self._extended.get(property,'Not Set')}")

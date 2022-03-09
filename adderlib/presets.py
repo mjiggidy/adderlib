@@ -32,17 +32,17 @@ class AdderPreset:
 	@property
 	def id(self) -> str:
 		"""Preset ID"""
-		return self._extended.get("cp_id") or None
+		return self._extended.get("cp_id","")
 	
 	@property
 	def name(self) -> str:
 		"""Preset name"""
-		return self._extended.get("cp_name")
+		return self._extended.get("cp_name","")
 	
 	@property
 	def description(self) -> str:
 		"""Preset description"""
-		return self._extended.get("cp_description")
+		return self._extended.get("cp_description","")
 	
 	@property
 	def pair_count(self) -> int:
@@ -67,7 +67,7 @@ class AdderPreset:
 	@property
 	def connected_rx_count(self) -> int:
 		"""The number of receivers already connected to this preset"""
-		rx_count = self._extended.get("connected_rx_count","0")
+		rx_count = self._extended.get("connected_rx_count","")
 		return int(rx_count) if rx_count.isnumeric() else 0
 
 	@property

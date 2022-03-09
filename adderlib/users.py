@@ -1,9 +1,9 @@
 class AdderUser:
-	"""Authenticated user"""
+	"""Adder user account"""
 
 	def __init__(self):
-		self._username = None
-		self._token = None
+		self._username = ""
+		self._token = ""
 	
 	def set_logged_in(self, user:str, token:str):
 		"""Log a user in with a valid session token"""
@@ -12,13 +12,13 @@ class AdderUser:
 	
 	def set_logged_out(self):
 		"""Log the user out"""
-		self._username = None
-		self._token = None
+		self._username = ""
+		self._token = ""
 
 	@property
 	def logged_in(self) -> bool:
 		"""Whether the user has been successfully authenticated"""
-		return True if self._username and self._token else False
+		return self._username and self._token
 	
 	@property
 	def logged_out(self) -> bool:
