@@ -54,12 +54,15 @@ def showChannelMenu(channels:typing.Iterable[adder.AdderChannel]) -> adder.Adder
 if len(sys.argv) < 4:
 	sys.exit("Usage: example.py server_address username password")
 
+address, username, password = sys.argv[1:4]
+
 try:
-	api = adder.AdderAPI(sys.argv[1])
-	api.login(username=sys.argv[2], password=sys.argv[3])
-	if not api.user.logged_in: raise Exception("Did not log in")
+	api = adder.AdderAPI(address)
+	api.login(username=username, password=password)
+except adder.AdderRequestError as e:
+	sys.exit(f"Unable to log in user ({e})")
 except Exception as e:
-	sys.exit(f"Unable to log in user {sys.argv[2]}: {e}")
+	sys.exit(f"Unable to connect to the Adder manager ({e.__class__.__name__})")
 
 
 pairs = []

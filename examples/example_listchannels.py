@@ -11,9 +11,11 @@ def tx_from_id(devices:list[devices.AdderTransmitter], id:str) -> typing.Optiona
 if len(sys.argv) < 4:
 	sys.exit(f"Usage: {__file__} server_address username password")
 
+address, username, password = sys.argv[1:4]
+
 try:
-	api = adder.AdderAPI(sys.argv[1])
-	api.login(username=sys.argv[2], password=sys.argv[3])
+	api = adder.AdderAPI(address)
+	api.login(username=username, password=password)
 except adder.AdderRequestError as e:
 	sys.exit(f"Unable to log in user ({e})")
 except Exception as e:
@@ -21,12 +23,31 @@ except Exception as e:
 
 trans = list(api.getTransmitters())
 
+print(f"\nChannels available to {api.user.username}:\n")
+
 # Don't judge me here
-print(f"{'Channel'.ljust(30)}{'Description'.ljust(20)}{'Location'.ljust(20)}{'Status'.ljust(9)}{'Transmitter'.ljust(20)}{'Shortcut'}")
-print("="*108)
+print(str().join([str(x).ljust(24) for x in [
+	"Channel",
+	"Description",
+	"Location",
+	"Status",
+	"Transmitter",
+	"Shortcut"
+]]))
+
+print("="*24*6)
 
 for ch in api.getChannels():
-	print(f"{ch.name.ljust(30)}{ch.description.ljust(20)}{ch.location.ljust(20)}{'Online   ' if ch.is_online else 'Offline  '}{str(tx_from_id(trans,ch.tx_id).name or '').ljust(20)}{ch.shortcut}")
+
+	print(str().join([str(x).ljust(24) for x in [
+		ch.name,
+		ch.description,
+		ch.location,
+		"Online" if ch.is_online else "Offline",
+		tx_from_id(trans, ch.tx_id).name,
+		ch.shortcut
+	]]))
+
 
 print("")
 api.logout()
