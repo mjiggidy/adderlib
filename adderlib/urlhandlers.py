@@ -2,8 +2,8 @@ import abc, urllib.parse
 import requests
 import xmltodict
 
-class InvalidServerAddressError(RuntimeError):
-	"""The server address provided is missing or invalid"""
+#class InvalidServerAddressError(RuntimeError):
+#	"""The server address provided is missing or invalid"""
 
 class UrlHandler(abc.ABC):
 	"""Abstract URL Handler"""
