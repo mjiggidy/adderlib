@@ -3,7 +3,7 @@ import urllib.parse, typing
 
 from .urlhandlers import UrlHandler, DebugHandler, RequestsHandler
 from .users import AdderUser
-from .devices import AdderDevice, AdderReceiver, AdderTransmitter, AdderUSBExtender, AdderUSBReceiver, AdderUSBTransmitter
+from .devices import AdderDevice, AdderReceiver, AdderTransmitter, AdderServer, AdderUSBExtender, AdderUSBReceiver, AdderUSBTransmitter
 from .channels import AdderChannel
 from .presets import AdderPreset
 
@@ -142,6 +142,29 @@ class AdderAPI:
 				if r_id is not None and r_id != rx.id:
 					continue
 				yield rx
+
+	# Device management
+	def getServers(self) -> typing.Generator[AdderServer, None, None]:
+		"""Request a list of available Adderlink AIM Servers"""
+
+		args = {
+			"v":self._api_version,
+			"token":self._user.token,
+			"method":"get_servers"
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1" and "servers" in response:
+
+			# It seems `xmltodict` only returns a list of nodes if there are more than one
+			if response.get("count_servers") == "1":
+				servers_list = [response.get("servers").get("server")]
+			else:
+				servers_list = response.get("servers").get("server")
+
+			for server in servers_list:
+				yield AdderServer(server)
 	
 	def setDeviceInfo(self, device:AdderDevice, *, description:typing.Optional[str]=None, location:typing.Optional[str]=None):
 		"""Update the information for an existing device"""
@@ -600,7 +623,43 @@ class AdderAPI:
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
+	
+	def replaceDevice(self, old_device:AdderDevice, new_device:AdderDevice):
+		"""Replace an old device with a new one"""
 
+		args = {
+			"v": self._api_version,
+			"token": self._user._token,
+			"method": "replace_device",
+			"d_id": old_device.id,
+			"r_d_id": new_device.id
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
+	
+	def identifyDevice(self, device:AdderDevice):
+		"""Sends an 'identify' command to the specified device"""
+
+		args = {
+			"v": self._api_version,
+			"token": self._user._token,
+			"method": "identify_device",
+			"id": device.id
+		}
+
+		response = self._url_handler.api_call(self._server_address, args)
+
+		if response.get("success") == "1":
+			return True
+		
+		elif "errors" in response:
+			raise Exception(f"Errors: {response.get('errors')}")
 
 	@property
 	def user(self) -> AdderUser:
