@@ -301,3 +301,101 @@ class AdderUSBReceiver(AdderUSBExtender):
 	def connected_to(self) -> str:
 		"""MAC address of the connected transmitter"""
 		return self._extended.get("connectedTo","")
+
+class AdderServer:
+	"""An Adder Server Device"""
+
+	@enum.unique
+	class Role(enum.Enum):
+		"""The role of the AIM"""
+		SOLO    = "solo",
+		BACKUP  = "backup",
+		PRIMARY = "primary",
+		UNCONFIGURED = "unconfigured",
+		UNKNOWN = "unknown"
+	
+	@enum.unique
+	class Status(enum.Enum):
+		"""The status of the AIM"""
+		ACTIVE   = "active",
+		STANDBY  = "standby",
+		FAILED   = "failed",
+		QUISCENT =  "quiscent",
+		UNKNOWN  = "unknown"
+	
+	@enum.unique
+	class DualEthernetConfig(enum.Enum):
+		"""The configuration of the second ethernet port"""
+		NO      = 0,
+		DHCP    = 1,
+		STATIC  = 2,
+		BONDED  = 3,
+		UNKNOWN = -1
+
+
+	def __init__(self, properties:dict):
+		# Do a lil copy
+		self._extended = {key: val for key,val in properties.items()}
+	
+	# Human-friendly descriptions
+	@property
+	def name(self) -> str:
+		"""Server name"""
+		return self._extended.get("name","")
+
+	@property
+	def description(self) -> str:
+		"""Server description"""
+		return self._extended.get("description","")
+
+	@property
+	def location(self) -> str:
+		"""Server location"""
+		return self._extended.get("location","")
+	
+	@property
+	def role(self) -> Role:
+		"""The configured role of the AIM"""
+		try:
+			return self.Role(self._extended.get("role"))
+		except Exception:
+			return self.Role("unknown")
+	
+	@property
+	def status(self) -> Status:
+		"""The current status of the AIM"""
+		try:
+			return self.Status(self._extended.get("status"))
+		except Exception:
+			return self.Status("unknown")
+	
+	@property
+	def ip_addresses(self) -> typing.Tuple[typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address,None]]:
+		"""IP addresses on the network"""
+		return (
+			ipaddress.ip_address(self._extended.get("ip")) if self._extended.get("ip") else None,
+			ipaddress.ip_address(self._extended.get("ip2")) if self._extended.get("ip2") else None,
+		)
+	
+	@property
+	def ip_address(self) -> typing.Union[ipaddress.IPv4Address,ipaddress.IPv6Address,None]:
+		"""Primary IP address of the device"""
+		return self.ip_addresses[0] or None
+
+	@property
+	def mac_addresses(self) -> typing.Tuple[str]:
+		"""MAC addresses of the interfaces"""
+		return (self._extended.get("mac",""), self._extended.get("mac2",""))
+	
+	@property
+	def mac_address(self) -> str:
+		"""Primary MAC address"""
+		return self.mac_addresses[0]
+
+	@property
+	def dual_ethernet_config(self) -> DualEthernetConfig:
+		"""The configuration of the second ethernet port"""
+		try:
+			return self.DualEthernetConfig(int(self._extended.get("eth1",-1)))
+		except Exception:
+			return self.DualEthernetConfig(-1)
