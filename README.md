@@ -16,7 +16,7 @@ With `adderlib`, you can:
 
 The best way to get started is to check out the [examples](examples/), and then the [official documentation on ReadTheDocs](http://adderlib.readthedocs.io/).  But in general, it's four easy steps:
 
-```
+```python
 from adderlib import adder
 
 # Step 1: Create a handle to the API by passing the IP address or hostname of the AIM (the KVM server)
