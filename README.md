@@ -16,7 +16,8 @@ With `adderlib`, you can:
 
 The best way to get started is to check out the [examples](examples/), and then the [official documentation on ReadTheDocs](http://adderlib.readthedocs.io/).  But in general, it's four easy steps:
 
-[code]from adderlib import adder
+```
+from adderlib import adder
 
 # Step 1: Create a handle to the API by passing the IP address or hostname of the AIM (the KVM server)
 api = adder.AdderAPI("192.168.1.10")
@@ -29,7 +30,8 @@ for tx in api.getTransmitters():
   do_some_stuff(tx)
   
 # Step 4: Don't forget to log out!
-api.logout()[/code]
+api.logout()
+```
 
 ## Customizable
 
