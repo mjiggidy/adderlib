@@ -22,7 +22,7 @@ from adderlib import adder
 # Step 1: Create a handle to the API by passing the IP address or hostname of the AIM (the KVM server)
 api = adder.AdderAPI("192.168.1.10")
 
-# Step 2: Log in using existing an KVM account
+# Step 2: Log in using an exising KVM account
 api.login("username","password")
 
 # Step 3: Do some stuff
