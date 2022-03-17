@@ -1,6 +1,6 @@
 # adderlib
 
-`adderlib` is an unofficial python implementation of the [url=https://support.adder.com/tiki/tiki-index.php?page=ALIF%3A%20API]Adder API[/url], for use with Adderlink KVM systems.
+`adderlib` is an unofficial python implementation of the [Adder API](https://support.adder.com/tiki/tiki-index.php?page=ALIF%3A%20API), for use with Adderlink KVM systems.
 
 With `adderlib`, you can:
 - Log in or out as an existing KVM user
