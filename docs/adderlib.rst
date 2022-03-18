@@ -1,6 +1,3 @@
-adderlib package
-================
-
 Submodules
 ----------
 
@@ -13,11 +10,3 @@ Submodules
    adderlib.presets
    adderlib.urlhandlers
    adderlib.users
-
-Module contents
----------------
-
-.. automodule:: adderlib
-   :members:
-   :undoc-members:
-   :show-inheritance:
