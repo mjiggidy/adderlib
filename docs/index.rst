@@ -12,8 +12,8 @@ Welcome to adderlib's documentation!
 ====================================
 
 .. toctree::
-   :maxdepth: 4
    :caption: Contents:
+   :maxdepth: 1
    
    connection
    adderlib
@@ -58,9 +58,10 @@ The best way to get started is to check out the `examples on GitHub <https://git
    # Step 4: Don't forget to log out!
    api.logout()
 
+Next Steps
+==========
 
-
-
+For more in-depth usage information, start with :doc:`connection`.
 
 Indices and tables
 ==================
