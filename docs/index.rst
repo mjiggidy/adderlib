@@ -16,6 +16,7 @@ Welcome to adderlib's documentation!
    :maxdepth: 1
    
    connection
+   devices
    adderlib
 
 
