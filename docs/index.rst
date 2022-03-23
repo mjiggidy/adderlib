@@ -15,6 +15,7 @@ Welcome to adderlib's documentation!
    :maxdepth: 4
    :caption: Contents:
    
+   connection
    adderlib
 
 
