@@ -35,6 +35,18 @@ existing KVM user account set up on the AIM.
 
 Once an API connection has been established with a valid user, the rest of the ``adderlib`` API can be used.
 
+Logging Out
+-----------
+
+The user should always be logged out with :meth:`adderlib.adder.AdderAPI.logout` by the end of the program, to terminate the session and prevent it from persisting in the AIM server's memory.  
+Logging out is straightforward:
+
+.. code-block:: python
+
+	api.logout()
+
+``logout()`` can be safely called even if a user is not currently logged in.
+
 URL Handlers
 ============
 
