@@ -44,6 +44,9 @@ A channel can be connected to a receiver with :meth:`adderlib.adder.AdderAPI.con
 
 An optional named argument ``mode`` can be given a named value from the :class:`adderlib.channels.AdderChannel.ConnectionMode` enum.
 
+.. note::
+	For more information on working with Adder receivers, see :doc:`devices`.
+
 Disconnecting from a Channel
 ----------------------------
 
@@ -105,6 +108,9 @@ While this method allows for a very granular configuration, in practice this is 
 
 In this example, the same transmitter is used for all video, audio, USB, and serial sources.  Since no :class:`~.ConnectionMode` list was 
 given, the allowed connection modes for this channel will be inherited based on Adder's permissions system.
+
+.. note::
+	For more information on working with Adder transmitters, see :doc:`devices`.
 
 
 Deleting a Channel

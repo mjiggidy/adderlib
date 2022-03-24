@@ -27,6 +27,8 @@ Welcome to adderlib's documentation!
    adderlib.channels
    adderlib.devices
    adderlib.presets
+   adderlib.users
+   adderlib.urlhandlers
 
 
 About the Library

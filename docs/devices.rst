@@ -126,3 +126,8 @@ A list of servers available to the user can be retrieved with :meth:`adderlib.ad
 .. note::
 	Unlike :class:`~.devices.AdderTransmitter` or :class:`~.devices.AdderReceiver`, :class:`~.devices.AdderServer` 
 	does not inherit from the base class :class:`~.devices.AdderDevice`, so many common attributes like ``id`` are not available.
+
+Next Steps
+==========
+
+Now that we know how to work with Adder devices, we can use them to create and connect to :doc:`channels` and :doc:`presets`.
