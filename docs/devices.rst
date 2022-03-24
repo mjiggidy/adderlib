@@ -10,6 +10,9 @@ Transmitters
 
 In ``adderlib``, an Adderlink transmitter is represented by :class:`adderlib.devices.AdderTransmitter`.
 
+:class:`~.devices.AdderTransmitter` inherits from base class :class:`adderlib.devices.AdderDevice`, which exposes 
+more useful properties to be aware of.
+
 Getting Transmitters
 --------------------
 
@@ -25,18 +28,40 @@ If the ID for a transmitter is known, it can be provided as an argument and that
 .. code-block:: python
 
 	try:
-		tx = next(api.getTransmitters(420))
+		tx = next(api.getTransmitters(23))
 	except StopIteration:
-		print("No transmitter found with ID 80085", sys.stderr)
+		print("No transmitter found with ID 23", sys.stderr)
 
 .. note::
 	:meth:`~.adder.AdderAPI.getTransmitters` always returns a `Generator` of :class:`~.devices.AdderTransmitter` objects.
+
+Modifying Transmitters
+----------------------
+
+A transmitter's description and location information can be modified using :meth:`adderlib.adder.AdderAPI.setDeviceInfo` by 
+passing the relevant :class:`~.devices.AdderTransmitter` object, and ``description`` and/or ``location`` strings as named 
+arguments.
+
+.. code-block:: python
+
+	for idx, tx in enumerate(api.getTransmitters()):
+		api.setDeviceInfo(
+			tx,
+			location="Bathroom",
+			description=f"Transmitter from Toilet Maintanence Interface {idx+1}"
+		)
+
+If either ``description`` or ``location`` arguments are omitted, the existing information for that argument will remain 
+the same.  Pass an empty string to truly clear it out.
 
 
 Receivers
 =========
 
 In ``adderlib``, an Adderlink receiver is represented by :class:`adderlib.devices.AdderReceiver`.
+
+:class:`~.devices.AdderReceiver` inherits from base class :class:`adderlib.devices.AdderDevice`, which exposes 
+more useful properties to be aware of.
 
 Getting Receivers
 -----------------
@@ -53,12 +78,32 @@ If the ID for a receiver is known, it can be provided as an argument and that re
 .. code-block:: python
 
 	try:
-		rx = next(api.getReceiver(690))
+		rx = next(api.getReceiver(42))
 	except StopIteration:
-		print("No receiver found with ID 690", sys.stderr)
+		print("No receiver found with ID 42", sys.stderr)
 
 .. note::
 	:meth:`~.adder.AdderAPI.getReceivers` always returns a `Generator` of :class:`~.devices.AdderReceiver` objects.
+
+
+Modifying Receivers
+-------------------
+
+A receiver's description and location information can be modified using :meth:`adderlib.adder.AdderAPI.setDeviceInfo` by 
+passing the relevant :class:`~.devices.AdderReceiver` object, and ``description`` and/or ``location`` strings as named 
+arguments.
+
+.. code-block:: python
+
+	for idx, rx in enumerate(api.getReceivers()):
+		api.setDeviceInfo(
+			rx,
+			location="Break Room",
+			description=f"Receiver {idx+1} for lunch work"
+		)
+
+If either ``description`` or ``location`` arguments are omitted, the existing information for that argument will remain 
+the same.  Pass an empty string to truly clear it out.
 
 AIM Servers
 ===========

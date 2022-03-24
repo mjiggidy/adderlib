@@ -12,20 +12,29 @@ Welcome to adderlib's documentation!
 ====================================
 
 .. toctree::
-   :caption: Contents:
+   :caption: Usage Guide
    :maxdepth: 1
    
    connection
    devices
-   adderlib
+   channels
+   presets
+
+.. toctree::
+   :caption: Module Definitions
+
+   adderlib.adder
+   adderlib.channels
+   adderlib.devices
+   adderlib.presets
 
 
 About the Library
 =================
 
-`adderlib` is an unofficial python implementation of the `Adder API <https://support.adder.com/tiki/tiki-index.php?page=ALIF%3A%20API>`_, for use with Adderlink KVM systems.
+``adderlib`` is an unofficial python wrapper for the `Adder API <https://support.adder.com/tiki/tiki-index.php?page=ALIF%3A%20API>`_, for use with Adderlink KVM systems.
 
-With `adderlib`, you can:
+With ``adderlib``, you can:
 
 * Log in or out as an existing KVM user
 * Query lists of transmitters, receivers, and channels available to the user

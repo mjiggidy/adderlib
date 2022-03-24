@@ -306,7 +306,7 @@ class AdderAPI:
 			raise Exception("Unknown error")
 
 
-	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED) -> bool:
+	def connectToChannel(self, channel:AdderChannel, receiver:AdderReceiver, mode:typing.Optional[AdderChannel.ConnectionMode]=AdderChannel.ConnectionMode.SHARED):
 		"""Connect a channel to a receiver"""
 
 		args = {
@@ -320,7 +320,7 @@ class AdderAPI:
 
 		response = self._url_handler.api_call(self._server_address, args)
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			error = response.get("errors").get("error")
@@ -329,7 +329,7 @@ class AdderAPI:
 		else:
 			raise Exception("Unknown error")
 		
-	def disconnectFromChannel(self, receiver:typing.Union[AdderReceiver, typing.Iterable[AdderReceiver]], force:typing.Optional[bool]=False) -> bool:
+	def disconnectFromChannel(self, receiver:typing.Union[AdderReceiver, typing.Iterable[AdderReceiver]], force:typing.Optional[bool]=False):
 		"""Disconnect a receiver -- or iterable of receivers -- from its current channel"""
 		receiver = [receiver] if isinstance(receiver, AdderReceiver) else receiver
 
@@ -344,13 +344,13 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
-			return True
+			return
 
 		elif "errors" in response:
 			error = response.get("errors").get("error")
 			raise AdderRequestError(f"Error {error.get('code','?')}: {error.get('msg','?')}")
 
-	def deleteChannel(self, channel:AdderChannel) -> bool:
+	def deleteChannel(self, channel:AdderChannel):
 		"""Delete a channel.  Admin privileges are required."""
 		args = {
 			"v": self._api_version,
@@ -362,7 +362,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 
 		if response.get("success") == "1":
-			return True
+			return
 
 		elif "errors" in response:
 			error = response.get("errors").get("error")
