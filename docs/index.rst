@@ -26,6 +26,7 @@ About the Library
 `adderlib` is an unofficial python implementation of the `Adder API <https://support.adder.com/tiki/tiki-index.php?page=ALIF%3A%20API>`_, for use with Adderlink KVM systems.
 
 With `adderlib`, you can:
+
 - Log in or out as an existing KVM user
 - Query lists of transmitters, receivers, and channels available to the user
 - Access many properties of the KVM devices
