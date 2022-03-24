@@ -188,7 +188,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)			
 			
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			error = response.get("errors").get("error")
@@ -442,7 +442,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -461,7 +461,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -479,7 +479,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -561,7 +561,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -580,7 +580,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 	
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -600,7 +600,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 	
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -618,7 +618,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 	
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -637,7 +637,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
@@ -655,7 +655,7 @@ class AdderAPI:
 		response = self._url_handler.api_call(self._server_address, args)
 
 		if response.get("success") == "1":
-			return True
+			return
 		
 		elif "errors" in response:
 			raise Exception(f"Errors: {response.get('errors')}")
