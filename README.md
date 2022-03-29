@@ -14,7 +14,7 @@ With `adderlib`, you can:
 
 ## Getting Started
 
-The best way to get started is to check out the [examples](examples/), and then the [official documentation on ReadTheDocs](http://adderlib.readthedocs.io/).  But in general, it's four easy steps:
+The best way to get started is to check out the [examples](https://github.com/mjiggidy/adderlib/blob/master/examples/), and then the [official documentation on ReadTheDocs](http://adderlib.readthedocs.io/).  But in general, it's four easy steps:
 
 ```python
 from adderlib import adder
