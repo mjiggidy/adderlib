@@ -1,6 +1,5 @@
-import abc, urllib.parse
-import requests
-import xmltodict
+import abc, pathlib, urllib.parse
+import requests, xmltodict
 
 #class InvalidServerAddressError(RuntimeError):
 #	"""The server address provided is missing or invalid"""
@@ -45,41 +44,36 @@ class RequestsHandler(UrlHandler):
 
 
 class DebugHandler(UrlHandler):
-	"""URL handler for debugging with sample XMLs from the documentation"""
-	
+	"""
+	URL handler for debugging with sample XMLs from the documentation
+	Class properties:
+		dirpath:str  -- A path to the directory containing the sample XML responses (default: ./example_xml)
+		verbose:bool -- Flag to print debug data to stdout (default: False)
+	"""
+
+	dirpath: pathlib.Path = "./example_xml"
+	verbose: bool = False
+
 	@classmethod
 	def api_call(cls, server_address:urllib.parse.ParseResult, args:dict) -> xmltodict.OrderedDict:
 		"""Load sample XML return data for the given query"""
 
 		full_url = cls._build_url(server_address, args)
-		print(f"Requesting: {full_url}")
-		print(f"With params: {args}")
-		
-		method = args.get("method")[0]
+					
+		method = args.get("method")
+		if not method:
+			raise Exception("Invalid API call: No method specified.")
 
-		if method == "login":
-			if args.get("password")[0] == "goodpwd":
-				with open("example_xml/login.xml") as api_response:
-					response = cls._parse_response(api_response.read())
-				return response
-			else:
-				with open("example_xml/login_fail.xml") as api_response:
-					response = cls._parse_response(api_response.read())
-				return response
-		
-		if method == "logout":
-			with open("example_xml/logout.xml") as api_response:
-				response = cls._parse_response(api_response.read())
-			return response
-		
-		elif method == "get_devices":
-			with open("example_xml/get_devices.xml") as api_response:
-				response = cls._parse_response(api_response.read())
-			#	print("Responding with",response)
-			return response
-		
-		elif method == "get_channels":
-			with open("example_xml/get_channels.xml") as api_response:
-				response = cls._parse_response(api_response.read())
-			#	print("Responding with",response)
-			return response
+		path_response = pathlib.Path(cls.dirpath, method).with_suffix(".xml")
+
+		if cls.verbose:
+			print(f"Requesting:     {full_url}")
+			print(f"With params:    {args}")
+			print(f"Method given:   {method}")
+			print(f"Using response: {path_response}")	
+
+		if not path_response.is_file():
+			raise FileNotFoundError(f"No example XML found for method '{method}' in {cls.dirpath}")
+
+		with path_response.open('r') as file_response:
+			return cls._parse_response(file_response.read())

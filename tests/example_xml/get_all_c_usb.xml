@@ -1,0 +1,23 @@
+<api_response>
+   <version>6</version>
+   <timestamp>2012-12-14 12:12:12</timestamp>
+   <success>1</success>
+   <count_c_usbs>2</count_c_usbs>
+   <c_usb_lan_extenders>
+      <c_usb item="1">
+         <mac>aa:aa:aa:aa:aa:aa</mac>
+         <type>rx</type>
+         <name>John's Desk</name>
+         <online>1</online>
+         <ip>10.10.10.25</ip>
+         <connectedTo>bb:bb:bb:bb:bb:bb</connectedTo>
+      </c_usb>
+      <c_usb item="2">
+         <mac>bb:bb:bb:bb:bb:bb</mac>
+         <type>tx</type>
+         <name>John's PC</name>
+         <online>1</online>
+         <ip>10.10.10.27</ip>
+      </c_usb>
+   </c_usb_lan_extenders>
+</api_response>

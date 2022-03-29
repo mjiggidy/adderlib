@@ -1,0 +1,35 @@
+<api_response>
+    <version>9</version>
+    <timestamp>2021-06-01 16:10:28</timestamp>
+    <success>1</success>
+    <page>1</page>
+    <results_per_page>1000</results_per_page>
+    <total_servers>2</total_servers>
+    <count_servers>2</count_servers>
+    <servers>
+        <server item="1">
+            <name>192.168.22.105</name>
+            <role>primary</role>
+            <status>active</status>
+            <ip>192.168.22.105</ip>
+            <mac>70:85:c2:1c:21:6e</mac>
+            <eth1>0</eth1>
+            <ip2></ip2>
+            <mac2></mac2>
+            <description></description>
+            <location></location>
+        </server>
+        <server item="2">
+            <name>192.168.22.106</name>
+            <role>backup</role>
+            <status>standby</status>
+            <ip>192.168.14.107</ip>
+            <mac>70:85:c2:1c:22:6e</mac>
+            <eth1>0</eth1>
+            <ip2></ip2>
+            <mac2></mac2>
+            <description></description>
+            <location></location>
+        </server>
+    </servers>
+</api_response>
