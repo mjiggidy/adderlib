@@ -18,7 +18,7 @@ class AdderUser:
 	@property
 	def logged_in(self) -> bool:
 		"""Whether the user has been successfully authenticated"""
-		return self._username and self._token
+		return bool(self._username and self._token)
 	
 	@property
 	def logged_out(self) -> bool:

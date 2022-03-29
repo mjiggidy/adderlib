@@ -56,6 +56,9 @@ class AdderAPI:
 			"password":password
 		}
 
+		if self._user.logged_in:
+			raise AdderRequestError(f"Already logged in as {self._user.username}")
+
 		response = self._url_handler.api_call(self._server_address, args)
 		
 		if response.get("success") == "1" and response.get("token") is not None:

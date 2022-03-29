@@ -48,13 +48,13 @@ class AdderPreset:
 	def pair_count(self) -> int:
 		"""Number of valid channel/receiver pairs"""
 		cp_pairs = self._extended.get("cp_pairs","")
-		return int(cp_pairs) if cp_pairs.isnumeric() else 0
+		return int(cp_pairs) if str(cp_pairs).isnumeric() else 0
 	
 	@property
 	def pair_problem_count(self) -> int:
 		"""Number of problematic channel/receiver pairs"""
-		problem_cp_pairs = self._extended.get("problem_cp_pairs","0")
-		return int(problem_cp_pairs) if problem_cp_pairs.isnumeric() else 0
+		problem_cp_pairs = self._extended.get("problem_cp_pairs","")
+		return int(problem_cp_pairs) if str(problem_cp_pairs).isnumeric() else 0
 	
 	@property
 	def currently_active(self) -> ActiveState:
@@ -68,7 +68,7 @@ class AdderPreset:
 	def connected_rx_count(self) -> int:
 		"""The number of receivers already connected to this preset"""
 		rx_count = self._extended.get("connected_rx_count","")
-		return int(rx_count) if rx_count.isnumeric() else 0
+		return int(rx_count) if str(rx_count).isnumeric() else 0
 
 	@property
 	def view_button(self) -> ButtonState:

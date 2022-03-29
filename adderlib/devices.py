@@ -38,9 +38,9 @@ class AdderDevice(abc.ABC):
 		ALIF1002 =  's'
 		ALIF2020 =  't'
 		ALIF100T =  'd'
-		ALIF100T_VGA = 'f',
-		ALIF101T_HDMI = 'h',
-		ALIF4021R = '4',
+		ALIF100T_VGA = 'f'
+		ALIF101T_HDMI = 'h'
+		ALIF4021R = '4'
 		ALIFE300R = '8'
 	
 	
@@ -273,7 +273,7 @@ class AdderUSBExtender(abc.ABC):
 	@property
 	def name(self) -> str:
 		"""Device name"""
-		return self._extended.get("d_name","")
+		return self._extended.get("name","")
 	
 	@property
 	def ip_address(self) -> typing.Union[ipaddress.IPv4Address, ipaddress.IPv6Address, None]:
@@ -285,7 +285,7 @@ class AdderUSBExtender(abc.ABC):
 	
 	@property
 	def is_online(self) -> bool:
-		return self._extended.get("online") == 1
+		return self._extended.get("online") == "1"
 	
 	@property
 	def network_interface(self) -> NetworkInterface:
@@ -308,28 +308,28 @@ class AdderServer:
 	@enum.unique
 	class Role(enum.Enum):
 		"""The role of the AIM"""
-		SOLO    = "solo",
-		BACKUP  = "backup",
-		PRIMARY = "primary",
-		UNCONFIGURED = "unconfigured",
+		SOLO    = "solo"
+		BACKUP  = "backup"
+		PRIMARY = "primary"
+		UNCONFIGURED = "unconfigured"
 		UNKNOWN = "unknown"
 	
 	@enum.unique
 	class Status(enum.Enum):
 		"""The status of the AIM"""
-		ACTIVE   = "active",
-		STANDBY  = "standby",
-		FAILED   = "failed",
-		QUISCENT =  "quiscent",
+		ACTIVE   = "active"
+		STANDBY  = "standby"
+		FAILED   = "failed"
+		QUISCENT =  "quiscent"
 		UNKNOWN  = "unknown"
 	
 	@enum.unique
 	class DualEthernetConfig(enum.Enum):
 		"""The configuration of the second ethernet port"""
-		NO      = 0,
-		DHCP    = 1,
-		STATIC  = 2,
-		BONDED  = 3,
+		NO      = 0
+		DHCP    = 1
+		STATIC  = 2
+		BONDED  = 3
 		UNKNOWN = -1
 
 
