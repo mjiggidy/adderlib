@@ -14,22 +14,22 @@ setup(
     description="Python wrapper for the Adder API, for use with Adderlink KVM systems",
     long_description=README,
     long_description_content_type="text/markdown",
-    url={
-        "Documentation":"https://adderlib.readthedocs.io/",
-        "Github":"https://github.com/mjiggidy/adderlib"
-    },
+    url="https://adderlib.readthedocs.io/",
+    download_url="https://github.com/mjiggidy/adderlib/",
     author="Michael Jordan",
     author_email="michael@glowingpixel.com",
     license="GNU General Public License v3 or later (GPLv3+)",
     classifiers=[
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-		"Development Status :: 4 - Beta",
-		"Intended Audience :: Developers",
+		"Development Status :: 5 - Production/Stable",
+		"Intended Audience :: System Administrators",
 		"Topic :: Multimedia",
 		"Topic :: Internet",
+        "Topic :: Utilities",
 		"Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.9",
+        "Natural Language :: English"
     ],
     packages=["adderlib"],
     include_package_data=True,
