@@ -250,7 +250,7 @@ class AdderAPI:
 				yield AdderChannel(channel)
 	
 	def createChannel(self,
-		name:str, description:typing.Optional[str]=None, location:typing.Optional[str]=None, modes:typing.Optional[list[AdderChannel.ConnectionMode]]=None, 
+		name:str, description:typing.Optional[str]=None, location:typing.Optional[str]=None, modes:typing.Optional[typing.List[AdderChannel.ConnectionMode]]=None, 
 		video1:typing.Optional[AdderTransmitter]=None, video1_head:typing.Optional[int]=None,
 		video2:typing.Optional[AdderTransmitter]=None, video2_head:typing.Optional[int]=None,
 		audio:typing.Optional[AdderTransmitter]=None, usb:typing.Optional[AdderTransmitter]=None, serial:typing.Optional[AdderTransmitter]=None,
