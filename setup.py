@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 # Thanks https://realpython.com/pypi-publish-python-package/
 setup(
     name="adderlib",
-    version="1.0.2",
+    version="1.0.3",
     description="Python wrapper for the Adder API, for use with Adderlink KVM systems",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -33,5 +33,5 @@ setup(
     ],
     packages=["adderlib"],
     include_package_data=True,
-    install_requires=["requests", "xmltodict"]
+    install_requires=["requests", "xmltodict==0.12.0"]
 )
