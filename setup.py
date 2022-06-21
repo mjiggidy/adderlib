@@ -11,6 +11,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="adderlib",
     version="1.0.3",
+    python_requires=">=3.7",
     description="Python wrapper for the Adder API, for use with Adderlink KVM systems",
     long_description=README,
     long_description_content_type="text/markdown",
