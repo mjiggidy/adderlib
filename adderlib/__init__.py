@@ -1,2 +1,2 @@
 __all__ = ["adder","channels","devices","urlhandlers","users","presets"]
-__version__ = "1.0.2"
+__version__ = "1.0.3"
